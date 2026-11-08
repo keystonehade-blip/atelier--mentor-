@@ -1,0 +1,2113 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#090a0f">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Atelier Mentor">
+    <link id="pwa-manifest" rel="manifest" href='data:application/manifest+json,{"name":"ATELIER MENTOR // Identity & Execution Engine","short_name":"Atelier Mentor","start_url":"./index.html","display":"standalone","background_color":"#08090C","theme_color":"#090a0f","orientation":"portrait","icons":[{"src":"https://placehold.co/192x192/08090C/D4AF37.png?text=AM","sizes":"192x192","type":"image/png"},{"src":"https://placehold.co/512x512/08090C/D4AF37.png?text=ATELIER","sizes":"512x512","type":"image/png"}]}'>
+    <title>ATELIER MENTOR // Identity & Execution Engine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cinzel:wght@600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        obsidian: '#08090C',
+                        charcoal: '#12141C',
+                        slateCard: '#191C26',
+                        gold: {
+                            300: '#FDE68A',
+                            400: '#F59E0B',
+                            500: '#D4AF37',
+                            600: '#AA8220',
+                        },
+                        cyanGlow: {
+                            400: '#22D3EE',
+                            500: '#06B6D4'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Cinzel', 'serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * {
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #08090C;
+            color: #F3F4F6;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        /* Custom Range Slider */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+            background: #252A3A;
+            border-radius: 999px;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #D4AF37;
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -7px;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
+            border: 2px solid #FFF;
+        }
+        .gold-glow {
+            box-shadow: 0 0 24px rgba(212, 175, 55, 0.12);
+        }
+        /* Lightweight Hardware-Accelerated CSS Pulse (Zero RAM Lag) */
+        @keyframes subtlePulse {
+            0%, 100% { transform: scale(1); opacity: 0.65; }
+            50% { transform: scale(1.08); opacity: 1; }
+        }
+        .theta-pulse-ring {
+            animation: subtlePulse 4s ease-in-out infinite;
+            will-change: transform, opacity;
+        }
+        .theta-pulse-paused {
+            animation-play-state: paused;
+        }
+        #breath-orb {
+            transition: transform 0.7s ease-in-out, box-shadow 0.7s ease-in-out, border-color 0.5s ease;
+            will-change: transform;
+        }
+        /* SATS Dimmed Mode */
+        .sats-theater-active {
+            background: radial-gradient(circle at center, #14121d 0%, #040406 100%);
+        }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: #08090C; }
+        ::-webkit-scrollbar-thumb { background: #262B3C; border-radius: 4px; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between pb-24 selection:bg-gold-500 selection:text-obsidian">
+
+    <!-- STICKY TOP STATUS HEADER -->
+    <header class="sticky top-0 z-30 bg-obsidian/95 backdrop-blur-md border-b border-white/10 px-3.5 py-2.5">
+        <div class="max-w-lg mx-auto flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center text-obsidian font-bold shadow-md">
+                    <i class="fa-solid fa-compass-drafting text-base"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-1.5">
+                        <h1 class="font-display text-xs tracking-widest text-gold-500 font-bold">ATELIER MENTOR</h1>
+                        <span id="state-pill" class="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Creation</span>
+                    </div>
+                    <p class="text-[11px] text-gray-400 flex items-center gap-1.5 mt-0.5">
+                        <span id="audio-status-dot" class="w-2 h-2 rounded-full bg-gray-600 inline-block"></span>
+                        <span id="header-freq-readout" class="font-mono">AUDIO STANDBY</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Alignment Score + Data Vault + Instant Theta Master Button -->
+            <div class="flex items-center gap-1.5">
+                <div class="bg-charcoal border border-white/10 rounded-xl px-2 py-1 text-right">
+                    <span class="text-[8px] text-gray-400 uppercase block leading-none">Execution</span>
+                    <span id="header-score" class="font-mono text-xs font-bold text-gold-400">0%</span>
+                </div>
+                <button onclick="toggleVaultModal()" title="Backup & Continuous Evolution Vault" class="p-2 rounded-xl bg-charcoal border border-white/10 text-gray-300 hover:text-gold-400 active:scale-95 transition">
+                    <i class="fa-solid fa-database text-xs"></i>
+                </button>
+                <button id="quick-audio-btn" onclick="toggleAudioEngine()" class="px-2.5 py-2 rounded-xl bg-charcoal border border-gold-500/40 text-gold-400 text-xs font-semibold flex items-center gap-1.5 active:scale-95 transition">
+                    <i class="fa-solid fa-headphones"></i>
+                    <span id="quick-audio-label" class="font-mono">6Hz</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- BACKUP & CONTINUOUS EVOLUTION VAULT MODAL -->
+    <div id="vault-modal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-charcoal border border-gold-500/40 rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                <div>
+                    <span class="text-[10px] font-mono uppercase tracking-widest text-gold-400">Standalone Phone Setup & Backup</span>
+                    <h3 class="text-base font-bold text-white">API Key & Memory Vault</h3>
+                </div>
+                <button onclick="toggleVaultModal()" class="w-8 h-8 rounded-lg bg-obsidian border border-white/10 text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- PERSONAL GEMINI API KEY SETUP FOR STANDALONE PHONE USE -->
+            <div class="bg-obsidian border border-gold-500/30 rounded-xl p-3.5 space-y-2.5">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] font-mono uppercase text-gold-400 font-bold"><i class="fa-solid fa-key mr-1"></i>Personal Gemini API Key</span>
+                    <span id="api-key-status-pill" class="text-[9px] font-mono px-2 py-0.5 rounded bg-white/5 text-gray-400">Preview Mode</span>
+                </div>
+                <p class="text-[11px] text-gray-300 leading-relaxed">
+                    To use the live AI Mentor when installed on your phone, paste your free key from <a href="https://aistudio.google.com/apikey" target="_blank" class="text-gold-400 underline font-semibold">aistudio.google.com/apikey</a>. Saved privately on your phone only.
+                </p>
+                <div class="flex gap-1.5">
+                    <div class="relative flex-1">
+                        <input id="personal-api-key-input" type="password" placeholder="AIzaSy..." class="w-full bg-charcoal border border-white/15 rounded-xl pl-3 pr-9 py-2 text-xs font-mono text-white focus:outline-none focus:border-gold-500">
+                        <button type="button" onclick="toggleApiKeyVisibility()" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xs">
+                            <i id="api-key-eye-icon" class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <button onclick="savePersonalApiKey()" class="px-3.5 py-2 rounded-xl bg-gold-500 text-obsidian font-bold text-xs shrink-0 active:scale-95 transition">
+                        Save Key
+                    </button>
+                </div>
+            </div>
+
+            <div class="border-t border-white/10 pt-3 space-y-3">
+                <p class="text-xs text-gray-300 leading-relaxed">
+                    Whenever we add new upgrades to your app in the future, export your entire subconscious profile, neuroplasticity circuits, SATS scenes, and streaks here and restore them in 1 click.
+                </p>
+                <div class="grid grid-cols-2 gap-2.5">
+                    <button onclick="exportAppData()" class="py-2.5 px-3 rounded-xl bg-gold-500 text-obsidian font-bold text-xs flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-download"></i> Copy Backup Code
+                    </button>
+                    <button onclick="importAppData()" class="py-2.5 px-3 rounded-xl bg-slateCard border border-gold-500/40 text-gold-300 font-bold text-xs flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-upload"></i> Restore Backup
+                    </button>
+                </div>
+                <textarea id="vault-json-box" rows="3" class="w-full bg-obsidian border border-white/15 rounded-xl p-2.5 text-[11px] font-mono text-gray-300 focus:outline-none focus:border-gold-500" placeholder="Backup JSON code appears here when exporting, or paste your backup code here to restore..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="flex-1 max-w-lg w-full mx-auto px-3.5 pt-3.5 space-y-5">
+
+        <!-- PERSISTENT RAS NORTH STAR BANNER -->
+        <div class="bg-gradient-to-r from-charcoal via-slateCard to-charcoal border border-gold-500/30 rounded-2xl p-3.5 gold-glow">
+            <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-1.5 text-[11px] font-semibold text-gold-400 uppercase tracking-wider">
+                    <i class="fa-solid fa-crosshairs"></i>
+                    <span>Active RAS Identity Lock</span>
+                </div>
+                <span id="active-mentor-phase-badge" class="text-[10px] font-mono bg-gold-500/15 text-gold-300 px-2 py-0.5 rounded-full border border-gold-500/30">
+                    Phase I
+                </span>
+            </div>
+            <p id="banner-ras-target" class="text-xs sm:text-sm font-medium text-white mt-1.5 leading-snug">
+                "I operate from calm certainty, executing my craft and financial standards without hesitation."
+            </p>
+            <div class="mt-2 pt-2 border-t border-white/10 flex items-center justify-between text-[11px] text-gray-400">
+                <span class="truncate pr-2">#1 Target: <strong id="banner-daily-target" class="text-gold-300">90m Undistracted Deep Craft Block</strong></span>
+                <button onclick="switchTab('tab-coherence')" class="text-gold-400 hover:underline shrink-0 font-medium">Recalibrate</button>
+            </div>
+        </div>
+
+        <!-- =======================================================
+             TAB 1: THETA LAB & VOICE SUBCONSCIOUS IMPRINT
+             ======================================================= -->
+        <section id="tab-theta" class="tab-panel space-y-4">
+            <div class="bg-charcoal border border-white/10 rounded-2xl p-4 sm:p-5 gold-glow">
+                <div class="flex justify-between items-center mb-3">
+                    <div>
+                        <span class="text-[10px] font-mono uppercase tracking-widest text-gold-400 block">Zero-Lag Stereo WebAudio Synth</span>
+                        <h2 class="text-base sm:text-lg font-bold text-white">Binaural Frequency Engine</h2>
+                    </div>
+                    <span class="text-[11px] bg-white/5 border border-white/10 px-2.5 py-1 rounded-full text-gray-300">
+                        <i class="fa-solid fa-ear-listen text-gold-400 mr-1"></i>Stereo Earbuds
+                    </span>
+                </div>
+
+                <!-- Lightweight CSS Harmonic Visualizer (Replaces heavy Canvas to prevent mobile RAM drops) -->
+                <div class="relative h-40 w-full bg-obsidian rounded-xl border border-white/10 flex flex-col items-center justify-center overflow-hidden mb-4">
+                    <div id="harmonic-ring-1" class="theta-pulse-ring theta-pulse-paused absolute w-36 h-36 rounded-full border border-gold-500/20 pointer-events-none"></div>
+                    <div id="harmonic-ring-2" class="theta-pulse-ring theta-pulse-paused absolute w-24 h-24 rounded-full border border-gold-400/30 pointer-events-none" style="animation-delay: 1s;"></div>
+
+                    <div class="relative z-10 text-center">
+                        <div class="font-mono text-3xl sm:text-4xl font-bold text-white tracking-tight">
+                            <span id="display-beat-freq">6.0</span> <span class="text-base text-gold-400">Hz</span>
+                        </div>
+                        <p id="display-state-name" class="text-[11px] uppercase tracking-widest text-gold-300 font-semibold mt-1">
+                            DEEP THETA // SUBCONSCIOUS REHEARSAL
+                        </p>
+                        <div class="mt-2 inline-flex items-center gap-3 text-[11px] font-mono text-gray-400 bg-charcoal/90 px-3 py-1 rounded-full border border-white/10">
+                            <span>Left: <strong id="left-ear-hz" class="text-white">200.0</strong> Hz</span>
+                            <span class="text-gold-500">•</span>
+                            <span>Right: <strong id="right-ear-hz" class="text-white">206.0</strong> Hz</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Master Play/Stop Button -->
+                <button id="main-synth-btn" onclick="toggleAudioEngine()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-gold-500 to-gold-400 text-obsidian font-bold text-xs sm:text-sm tracking-wide shadow-lg active:scale-[0.99] transition flex items-center justify-center gap-2">
+                    <i id="main-synth-icon" class="fa-solid fa-play"></i>
+                    <span id="main-synth-text">ACTIVATE THETA SYNTHESIZER</span>
+                </button>
+
+                <!-- 5 Precision Brainwave Presets -->
+                <div class="mt-4">
+                    <label class="text-[11px] font-semibold uppercase tracking-wider text-gray-400 block mb-2">Precision Entrainment Presets</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="applyPreset(190, 4.5, 'BORDER THETA // DEEP SATS IMPRINT', this)" class="preset-btn text-left p-2.5 rounded-xl bg-obsidian border border-white/10 text-white transition">
+                            <div class="flex justify-between items-center">
+                                <span class="font-mono text-xs font-bold text-purple-400">4.5 Hz</span>
+                                <span class="text-[9px] bg-purple-500/20 text-purple-300 px-1.5 py-0.5 rounded">Deep SATS</span>
+                            </div>
+                            <p class="text-xs font-medium mt-1">Hypnagogic State</p>
+                            <p class="text-[10px] text-gray-400">Pre-sleep mind movie</p>
+                        </button>
+
+                        <button onclick="applyPreset(200, 6.0, 'DEEP THETA // SUBCONSCIOUS REHEARSAL', this)" class="preset-btn text-left p-2.5 rounded-xl bg-slateCard border border-gold-500 text-white transition">
+                            <div class="flex justify-between items-center">
+                                <span class="font-mono text-xs font-bold text-gold-400">6.0 Hz</span>
+                                <span class="text-[9px] bg-gold-500/20 text-gold-300 px-1.5 py-0.5 rounded">Core Theta</span>
+                            </div>
+                            <p class="text-xs font-medium mt-1">Identity Reprogramming</p>
+                            <p class="text-[10px] text-gray-400">Visual & emotional lock</p>
+                        </button>
+
+                        <button onclick="applyPreset(180, 7.83, 'SCHUMANN // HEART-BRAIN COHERENCE', this)" class="preset-btn text-left p-2.5 rounded-xl bg-obsidian border border-white/10 text-white transition">
+                            <div class="flex justify-between items-center">
+                                <span class="font-mono text-xs font-bold text-emerald-400">7.83 Hz</span>
+                                <span class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded">Schumann</span>
+                            </div>
+                            <p class="text-xs font-medium mt-1">Grounded Equilibrium</p>
+                            <p class="text-[10px] text-gray-400">Alpha-Theta bridge</p>
+                        </button>
+
+                        <button onclick="applyPreset(220, 10.0, 'ALPHA FLOW // EFFORTLESS MASTERY', this)" class="preset-btn text-left p-2.5 rounded-xl bg-obsidian border border-white/10 text-white transition">
+                            <div class="flex justify-between items-center">
+                                <span class="font-mono text-xs font-bold text-sky-400">10.0 Hz</span>
+                                <span class="text-[9px] bg-sky-500/20 text-sky-300 px-1.5 py-0.5 rounded">Alpha</span>
+                            </div>
+                            <p class="text-xs font-medium mt-1">Creative Studio Flow</p>
+                            <p class="text-[10px] text-gray-400">Calm deep execution</p>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Fine-Tuning Sliders -->
+                <div class="mt-4 pt-3.5 border-t border-white/10 space-y-3">
+                    <div>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-gray-300">Brainwave Offset (4.0 – 16.0 Hz)</span>
+                            <span id="slider-beat-label" class="font-mono text-gold-400 font-semibold">6.0 Hz</span>
+                        </div>
+                        <input id="beat-slider" type="range" min="4" max="16" step="0.1" value="6.0" oninput="updateSynthFromSliders()">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-300">Binaural Tone</span>
+                                <span id="vol-label" class="font-mono text-gray-400">60%</span>
+                            </div>
+                            <input id="volume-slider" type="range" min="5" max="100" step="1" value="60" oninput="updateVolumes()">
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-300">Warm Ambient Pad</span>
+                                <span id="noise-label" class="font-mono text-gray-400">25%</span>
+                            </div>
+                            <input id="noise-slider" type="range" min="0" max="80" step="1" value="25" oninput="updateVolumes()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VOICE IDENTITY LOOP RECORDER -->
+            <div class="bg-charcoal border border-white/10 rounded-2xl p-4 sm:p-5 space-y-3">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] font-mono uppercase tracking-widest text-gold-400">Auto-Suggestion Layer</span>
+                        <h3 class="text-sm sm:text-base font-bold text-white">Voice Identity Loop</h3>
+                    </div>
+                    <span id="voice-status-badge" class="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-white/5 text-gray-400">Standby</span>
+                </div>
+                <p class="text-xs text-gray-300 leading-relaxed">
+                    Record your own voice stating your present-tense reality and play it softly underneath the 6Hz Theta stream.
+                </p>
+                <div class="flex items-center gap-2 pt-1">
+                    <button id="record-btn" onclick="toggleVoiceRecording()" class="flex-1 py-2.5 px-3 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 transition">
+                        <i id="record-icon" class="fa-solid fa-microphone"></i>
+                        <span id="record-btn-text">Record Voice</span>
+                    </button>
+                    <button id="play-voice-btn" onclick="toggleVoiceLoopPlayback()" disabled class="flex-1 py-2.5 px-3 rounded-xl bg-slateCard border border-white/10 text-gray-500 text-xs font-semibold flex items-center justify-center gap-1.5 transition">
+                        <i class="fa-solid fa-repeat"></i>
+                        <span id="play-voice-text">Loop Over Theta</span>
+                    </button>
+                </div>
+                <audio id="voice-loop-player" loop class="hidden"></audio>
+            </div>
+        </section>
+
+        <!-- =======================================================
+             TAB 2: BRAIN-HEART COHERENCE & RAS PRIME (DISPENZA-STYLE)
+             ======================================================= -->
+        <section id="tab-coherence" class="tab-panel hidden space-y-4">
+            <!-- Survival vs Creation State Radar -->
+            <div class="bg-charcoal border border-white/10 rounded-2xl p-4 sm:p-5 space-y-3.5">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] font-mono uppercase tracking-widest text-gold-400">Neuro-Emotional Check-In</span>
+                        <h2 class="text-base sm:text-lg font-bold text-white">Survival vs. Creation State</h2>
+                    </div>
+                    <i class="fa-solid fa-heart-pulse text-gold-400 text-lg"></i>
+                </div>
+                <p class="text-xs text-gray-300 leading-relaxed">
+                    You cannot build a new identity from the old emotional state of stress or urgency. Select your current internal state to calibrate your nervous system:
+                </p>
+
+                <div class="grid grid-cols-2 gap-2.5">
+                    <button id="btn-state-survival" onclick="setInternalState('survival')" class="p-3 rounded-xl bg-obsidian border border-white/10 text-left transition">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-rose-400">SURVIVAL MODE</span>
+                            <i class="fa-solid fa-triangle-exclamation text-rose-400 text-xs"></i>
+                        </div>
+                        <p class="text-[11px] text-gray-400 mt-1">High beta stress, rushing, doubt, forcing outcomes, reactive.</p>
+                    </button>
+
+                    <button id="btn-state-creation" onclick="setInternalState('creation')" class="p-3 rounded-xl bg-emerald-950/30 border border-emerald-500/50 text-left transition">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-emerald-400">CREATION MODE</span>
+                            <i class="fa-solid fa-sparkles text-emerald-400 text-xs"></i>
+                        </div>
+                        <p class="text-[11px] text-gray-300 mt-1">Coherent alpha-theta, clear intention + elevated emotion.</p>
+                    </button>
+                </div>
+
+                <div id="survival-shift-alert" class="hidden bg-rose-950/40 border border-rose-500/40 rounded-xl p-3 text-xs text-rose-200 space-y-2">
+                    <p class="font-semibold"><i class="fa-solid fa-bolt mr-1"></i> Nervous System Interruption Required:</p>
+                    <p class="text-[11px] text-gray-300">Drop your shoulders, unclench your jaw, and run a 3-minute Heart-Brain Coherence breath below before touching any work.</p>
+                </div>
+            </div>
+
+            <!-- Guided Brain-Heart Coherence Pacer -->
+            <div class="bg-charcoal border border-white/10 rounded-2xl p-4 sm:p-5 text-center">
+                <div class="flex justify-between items-center text-left mb-3">
+                    <div>
+                        <span class="text-[10px] font-mono uppercase tracking-widest text-gold-400">Clear Intention + Elevated Emotion</span>
+                        <h3 class="text-base font-bold text-white">Heart-Brain Coherence Pacer</h3>
+                    </div>
+                    <div class="flex bg-obsidian p-1 rounded-xl border border-white/10 text-xs font-mono">
+                        <button onclick="setCoherenceDuration(3, this)" class="dur-btn px-2 py-1 rounded-lg bg-gold-500 text-obsidian font-bold">3m</button>
+                        <button onclick="setCoherenceDuration(5, this)" class="dur-btn px-2 py-1 rounded-lg text-gray-400">5m</button>
+                        <button onclick="setCoherenceDuration(10, this)" class="dur-btn px-2 py-1 rounded-lg text-gray-400">10m</button>
+                    </div>
+                </div>
+
+                <!-- Smooth CSS Coherence Orb -->
+                <div class="relative h-48 flex items-center justify-center my-1">
+                    <div class="w-40 h-40 rounded-full border border-gold-500/20 flex items-center justify-center">
+                        <div id="breath-orb" class="w-28 h-28 rounded-full bg-gradient-to-br from-gold-500/30 via-emerald-500/15 to-obsidian border-2 border-gold-400 flex flex-col items-center justify-center shadow-lg">
+                            <span id="breath-instruction" class="text-xs font-bold tracking-wider uppercase text-white">READY</span>
+                            <span id="rehearsal-timer-display" class="font-mono text-xl font-bold text-gold-300 mt-0.5">03:00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Elevated Emotion Anchor Selector -->
+                <div class="mb-3 text-left">
+                    <label class="text-[11px] font-semibold text-gray-400 uppercase block mb-1.5">Select Elevated Emotion to Generate Now:</label>
+                    <div class="flex flex-wrap gap-1.5">
+                        <button onclick="selectEmotionChip(this, 'Unshakable Certainty')" class="emotion-chip text-[11px] px-2.5 py-1 rounded-lg bg-gold-500 text-obsidian font-bold">Unshakable Certainty</button>
+                        <button onclick="selectEmotionChip(this, 'Deep Gratitude Ahead of Time')" class="emotion-chip text-[11px] px-2.5 py-1 rounded-lg bg-obsidian border border-white/10 text-gray-300">Gratitude Ahead of Time</button>
+                        <button onclick="selectEmotionChip(this, 'Creative Mastery & Joy')" class="emotion-chip text-[11px] px-2.5 py-1 rounded-lg bg-obsidian border border-white/10 text-gray-300">Creative Mastery</button>
+                        <button onclick="selectEmotionChip(this, 'Abundant Overflow')" class="emotion-chip text-[11px] px-2.5 py-1 rounded-lg bg-obsidian border border-white/10 text-gray-300">Abundant Overflow</button>
+                    </div>
+                </div>
+
+                <div class="bg-obsidian border border-white/10 rounded-xl p-3 text-left mb-3">
+                    <span id="coherence-prompt-title" class="text-[11px] font-mono text-gold-400 block">COHERENCE PROTOCOL // 4s IN - 4s HOLD - 6s OUT</span>
+                    <p id="coherence-prompt-desc" class="text-xs text-gray-300 mt-1">
+                        Focus your attention in the center of your chest. Breathe smoothly as if breathing through your heart while feeling <strong id="active-emotion-text" class="text-gold-300">Unshakable Certainty</strong>.
+                    </p>
+                </div>
+
+                <button id="start-rehearsal-btn" onclick="toggleCoherenceSession()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-gold-500 to-gold-400 text-obsidian font-bold text-xs sm:text-sm tracking-wide flex items-center justify-center gap-2">
+                    <i id="rehearsal-btn-icon" class="fa-solid fa-play"></i>
+                    <span id="rehearsal-btn-text">START COHERENCE + 7.83Hz GROUNDING</span>
+                </button>
+            </div>
+
+            <!-- RAS Identity & Target Lock Form -->
+            <div class="bg-charcoal border border-white/10 rounded-2xl p-4 sm:p-5 space-y-3">
+                <span class="text-[10px] font-mono uppercase tracking-widest text-gold-400 block">Reticular Activating System</span>
+                <h3 class="text-base font-bold text-white">Program Today's RAS Attention Filter</h3>
+                <div class="space-y-2.5">
+                    <div>
+                        <label class="text-xs text-gray-300 block mb-1">Present-Tense Identity Statement ("Who I am being today")</label>
+                        <textarea id="input-ras-statement" rows="2" class="w-full bg-obsidian border border-white/15 rounded-xl p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-gold-500"></textarea>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-300 block mb-1">#1 Non-Negotiable Execution Target</label>
+                        <input id="input-daily-target" type="text" class="w-full bg-obsidian border border-white/15 rounded-xl p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-gold-500">
+                    </div>
+                    <button onclick="saveRasFilter()" class="w-full py-3 rounded-xl bg-gold-500/20 border border-gold-500 text-gold-300 font-semibold text-xs sm:text-sm hover:bg-gold-500 hover:text-obsidian transition">
+                        <i class="fa-solid fa-lock mr-1.5"></i>LOCK IN RAS FILTER TO TOP BAR
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- =======================================================
+             TAB 3: SATS (STATE AKIN TO SLEEP) MENTAL MOVIE PLAYER
+             ======================================================= -->
+        <section id="tab-sats" class="tab-panel hidden space-y-4">
+            <div class="sats-theater-active border border-gold-500/40 rounded-2xl p-4 sm:p-5 space-y-4 gold-glow">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] font-mono uppercase tracking-widest text-purple-300">First-Person Sensory Rehearsal</span>
+                        <h2 class="text-base sm:text-lg font-bold text-white">SATS "Mental Movie" Reel</h2>
+                    </div>
+                    <button onclick="toggleSatsAutoPlay()" id="sats-play-btn" class="px-3 py-1.5 rounded-xl bg-gold-500 text-obsidian font-bold text-xs flex items-center gap-1.5">
+                        <i id="sats-play-icon" class="fa-solid fa-film"></i>
+                        <span id="sats-play-label">Play Reel (4.5Hz)</span>
+                    </button>
+                </div>
+
+                <p class="text-xs text-gray-300 leading-relaxed">
+                    In the drowsy 4.5Hz–6Hz Theta window, your subconscious accepts first-person sensory scenes as real memory. Experience these scenes <strong>from through your own eyes</strong>, feeling the relief and pride that it is already done.
+                </p>
+
+                <!-- Active Scene Theater Card -->
+                <div class="bg-obsidian/90 border border-gold-500/30 rounded-2xl p-4 sm:p-5 space-y-3 relative">
+                    <div class="flex items-center justify-between text-[11px] font-mono">
+                        <span id="sats-scene-pillar" class="text-gold-400 uppercase font-bold">SCENE 1 // CRAFT & MASTERY</span>
+                        <span id="sats-scene-counter" class="text-gray-400">1 / 4</span>
+                    </div>
+
+                    <h3 id="sats-scene-title" class="text-sm sm:text-base font-bold text-white leading-snug">
+                        Stepping back from a completed masterwork with total confidence and recognition.
+                    </h3>
+
+                    <div class="grid grid-cols-1 gap-2 pt-1 text-xs">
+                        <div class="bg-charcoal/80 border border-white/10 rounded-xl p-2.5">
+                            <span class="text-[10px] font-mono uppercase text-sky-400 block">1. Visual & Tactile Sensory Anchor (What you feel/see)</span>
+                            <p id="sats-scene-sensory" class="text-gray-200 mt-0.5">Feeling the weight of the tools in my hand, seeing the finished work glowing in front of me, hearing congratulatory messages.</p>
+                        </div>
+                        <div class="bg-charcoal/80 border border-white/10 rounded-xl p-2.5">
+                            <span class="text-[10px] font-mono uppercase text-emerald-400 block">2. Implied Completion Emotion (The Wish Fulfilled)</span>
+                            <p id="sats-scene-emotion" class="text-gray-200 mt-0.5">"It is done. My discipline paid off and my work speaks for itself."</p>
+                        </div>
+                    </div>
+
+                    <!-- Scene Controls -->
+                    <div class="flex items-center justify-between pt-2">
+                        <button onclick="prevSatsScene()" class="px-3 py-1.5 rounded-lg bg-charcoal border border-white/10 text-xs text-gray-300 hover:text-white">
+                            <i class="fa-solid fa-chevron-left mr-1"></i>Prev Scene
+                        </button>
+                        <span id="sats-autoplay-indicator" class="text-[10px] font-mono text-gray-500">Manual Mode</span>
+                        <button onclick="nextSatsScene()" class="px-3 py-1.5 rounded-lg bg-charcoal border border-white/10 text-xs text-gray-300 hover:text-white">
+                            Next Scene<i class="fa-solid fa-chevron-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Add Custom Mental Movie Scene -->
+                <div class="bg-charcoal/90 border border-white/10 rounded-xl p-3.5 space-y-2.5">
+                    <span class="text-xs font-bold text-gold-400 block">+ Add Custom Future-Self Scene to Reel</span>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input id="new-sats-pillar" type="text" placeholder="Pillar (e.g., Financial Freedom)" class="bg-obsidian border border-white/15 rounded-lg p-2 text-xs text-white">
+                        <input id="new-sats-emotion" type="text" placeholder="Core Feeling (e.g., Deep Relief)" class="bg-obsidian border border-white/15 rounded-lg p-2 text-xs text-white">
+                    </div>
+                    <input id="new-sats-title" type="text" placeholder="First-person scene (e.g., Looking at my account balance with calm certainty)" class="w-full bg-obsidian border border-white/15 rounded-lg p-2 text-xs text-white">
+                    <input id="new-sats-sensory" type="text" placeholder="Sensory detail (e.g., Feeling the phone in my hand, taking a deep warm breath)" class="w-full bg-obsidian border border-white/15 rounded-lg p-2 text-xs text-white">
+                    <button onclick="addCustomSatsScene()" class="w-full py-2.5 rounded-lg bg-gold-500/20 border border-gold-500 text-gold-300 text-xs font-bold hover:bg-gold-500 hover:text-obsidian transition">
+                        Add Scene to Mental Movie Reel
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- =======================================================
+             TAB 4: HERMETIC POLARITY & KABBALISTIC TREE ARCHITECT
+             ======================================================= -->
+        <section id="tab-hermetic" class="tab-panel hidden space-y-4">
+            <!-- 1. The 7 Hermetic Principles Polarity Transmuter -->
+            <div class="bg-charcoal border border-white/10 rounded-2xl p-4 sm:p-5 space-y-3.5 gold-glow">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] font-mono uppercase tracking-widest text-gold-400">The Kybalion // Mental Transmutation</span>
+                        <h2 class="text-base sm:text-lg font-bold text-white">Hermetic Polarity Transmuter</h2>
+                    </div>
+                    <i class="fa-solid fa-scale-balanced text-gold-400 text-lg"></i>
+                </div>
+
+                <p class="text-xs text-gray-300 leading-relaxed">
+                    <em>"Everything is Dual; Opposites are identical in nature, assessments differing only in degree."</em> Select the mental friction you feel right now to transmute its polarity into execution:
+                </p>
+
+                <!-- Friction Selector -->
+                <div class="flex flex-wrap gap-1.5">
+                    <button onclick="loadHermeticState('procrastination')" class="hermetic-chip text-[11px] px-2.5 py-1.5 rounded-lg bg-gold-500 text-obsidian font-bold">Procrastination / Inertia</button>
+                    <button onclick="loadHermeticState('doubt')" class="hermetic-chip text-[11px] px-2.5 py-1.5 rounded-lg bg-obsidian border border-white/10 text-gray-300">Creative Self-Doubt</button>
+                    <button onclick="loadHermeticState('scarcity')" class="hermetic-chip text-[11px] px-2.5 py-1.5 rounded-lg bg-obsidian border border-white/10 text-gray-300">Financial Anxiety</button>
+                    <button onclick="loadHermeticState('overwhelm')" class="hermetic-chip text-[11px] px-2.5 py-1.5 rounded-lg bg-obsidian border border-white/10 text-gray-300">Scattered Overwhelm</button>
+                </div>
+
+                <!-- Interactive Polarity Degree Slider -->
+                <div class="bg-obsidian border border-white/10 rounded-xl p-3.5 space-y-3">
+                    <div class="flex justify-between items-center text-xs font-bold">
+                        <span id="pole-negative" class="text-rose-400">Shadow Pole: Resistance & Delay</span>
+                        <span id="pole-positive" class="text-emerald-400">Mastery Pole: Decisive Momentum</span>
+                    </div>
+                    <input id="polarity-slider" type="range" min="0" max="100" value="85" oninput="updatePolarityDegree(this.value)">
+                    <div class="flex justify-between text-[10px] font-mono text-gray-400">
+                        <span>Unconscious Reaction (Effect)</span>
+                        <span id="polarity-pct" class="text-gold-400 font-bold">85% Transmuted</span>
+                        <span>Conscious Cause (Architect)</span>
+                    </div>
+
+                    <div class="pt-2 border-t border-white/10 space-y-1.5 text-xs">
+                        <div class="text-gold-400 font-mono text-[10px] uppercase" id="hermetic-law-title">PRINCIPLE OF POLARITY & RHYTHM</div>
+                        <p id="hermetic-reframe-text" class="text-gray-200 leading-relaxed">
+                            Resistance and drive are the exact same energy on a single scale. Do not fight the old state—shift your degree on the scale by initiating a single 3-minute physical action.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Kabbalistic Tree of Life (Sephiroth) Goal-to-Reality Architect -->
+            <div class="bg-charcoal border border-white/10 rounded-2xl p-4 sm:p-5 space-y-3.5">
+                <div>
+                    <span class="text-[10px] font-mono uppercase tracking-widest text-gold-400">Keter (Crown) to Malkuth (Physical Kingdom)</span>
+                    <h3 class="text-base font-bold text-white">Tree of Life Execution Funnel</h3>
+                    <p class="text-xs text-gray-400 mt-0.5">
+                        A vision remains a daydream if it stays in the upper spheres. Bring your desire down the Lightning Flash into concrete physical reality (*Malkuth*):
+                    </p>
+                </div>
+
+                <div class="space-y-2.5 text-xs">
+                    <div class="bg-obsidian border-l-2 border-gold-400 rounded-r-xl p-2.5">
+                        <label class="font-mono text-[10px] text-gold-400 uppercase block">1. Keter (Crown // Pure Will & Seed Desire)</label>
+                        <input id="tree-keter" type="text" placeholder="What is the overarching vision you are claiming?" class="w-full bg-transparent text-white mt-1 focus:outline-none">
+                    </div>
+
+                    <div class="bg-obsidian border-l-2 border-sky-400 rounded-r-xl p-2.5">
+                        <label class="font-mono text-[10px] text-sky-400 uppercase block">2. Chokhmah & Binah (Wisdom & Structure // The Blueprint)</label>
+                        <input id="tree-binah" type="text" placeholder="What skill, system, or vehicle turns this vision into structure?" class="w-full bg-transparent text-white mt-1 focus:outline-none">
+                    </div>
+
+                    <div class="bg-obsidian border-l-2 border-rose-400 rounded-r-xl p-2.5">
+                        <label class="font-mono text-[10px] text-rose-400 uppercase block">3. Chesed & Gevurah (Expansion & Severity // What Must Be Cut)</label>
+                        <input id="tree-gevurah" type="text" placeholder="Gevurah Boundary: What distraction or habit must be ruthlessly cut?" class="w-full bg-transparent text-white mt-1 focus:outline-none">
+                    </div>
+
+                    <div class="bg-obsidian border-l-2 border-emerald-400 rounded-r-xl p-2.5">
+                        <label class="font-mono text-[10px] text-emerald-400 uppercase block">4. Malkuth (The Physical Kingdom // Immediate 24-Hour Action)</label>
+                        <input id="tree-malkuth" type="text" placeholder="What physical action will you complete TODAY to ground this?" class="w-full bg-transparent text-white mt-1 focus:outline-none">
+                    </div>
+
+                    <button onclick="groundTreeIntoMalkuth()" class="w-full py-3 rounded-xl bg-gradient-to-r from-gold-500 to-gold-400 text-obsidian font-bold text-xs uppercase tracking-wider shadow-md">
+                        <i class="fa-solid fa-arrow-down-long mr-1"></i> Ground Malkuth Action into Today's Schedule
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- =======================================================
+             TAB 5: MENTOR SCHEDULE & ANTI-SABOTAGE CIRCUIT BREAKER
+             ======================================================= -->
+        <section id="tab-mentor" class="tab-panel hidden space-y-4">
+            <!-- Anti-Sabotage Emergency Circuit Breaker -->
+            <div class="bg-gradient-to-b from-rose-950/40 to-charcoal border border-rose-500/30 rounded-2xl p-4 sm:p-5 space-y-3">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] font-mono uppercase tracking-widest text-rose-400">Emergency Impulse Override</span>
+                        <h2 class="text-base sm:text-lg font-bold text-white">5-Minute Anti-Sabotage Sprint</h2>
+                    </div>
+                    <span class="text-xs font-mono text-gold-400">Overrides: <strong id="urges-defeated-count">0</strong></span>
+                </div>
+
+                <div class="flex flex-wrap gap-1.5">
+                    <button onclick="selectUrgeChip('Doomscrolling / Dopamine Escape')" class="text-[11px] bg-obsidian border border-white/10 px-2.5 py-1 rounded-lg text-gray-300">📱 Scrolling Urge</button>
+                    <button onclick="selectUrgeChip('Delaying High-Value Deep Work')" class="text-[11px] bg-obsidian border border-white/10 px-2.5 py-1 rounded-lg text-gray-300">⏳ Task Avoidance</button>
+                    <button onclick="selectUrgeChip('Perfectionism / Overthinking')" class="text-[11px] bg-obsidian border border-white/10 px-2.5 py-1 rounded-lg text-gray-300">🧠 Overthinking</button>
+                </div>
+
+                <input id="sabotage-urge-input" type="text" placeholder="Name the impulse or resistance..." class="w-full bg-obsidian border border-white/15 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-rose-400">
+
+                <div class="bg-obsidian border border-gold-500/30 rounded-xl p-3.5 flex items-center justify-between gap-3">
+                    <div>
+                        <span class="text-[10px] font-mono text-gold-400 uppercase block">14Hz Beta Lock Sprint</span>
+                        <div id="sprint-timer-display" class="font-mono text-2xl font-bold text-white">05:00</div>
+                    </div>
+                    <button id="sprint-start-btn" onclick="toggleSabotageSprint()" class="px-4 py-3 rounded-xl bg-gradient-to-r from-rose-500 to-amber-500 text-obsidian font-bold text-xs tracking-wide shadow-md active:scale-95 transition">
+                        <i class="fa-solid fa-bolt mr-1"></i><span id="sprint-btn-text">START 5-MIN OVERRIDE</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Full-Day Time-Locked Mentor Protocol -->
+            <div class="bg-charcoal border border-white/10 rounded-2xl p-4 sm:p-5 space-y-3.5">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] font-mono uppercase tracking-widest text-gold-400">Time-Locked Daily Architecture</span>
+                        <h3 class="text-base font-bold text-white">Full-Day Mentor Protocol</h3>
+                    </div>
+                    <button onclick="resetDailyChecklist()" class="text-[11px] text-gray-400 hover:text-rose-400">
+                        <i class="fa-solid fa-rotate-right mr-1"></i>New Day
+                    </button>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="w-full h-2 bg-obsidian rounded-full overflow-hidden border border-white/10">
+                    <div id="pillar-progress-bar" class="h-full bg-gradient-to-r from-gold-600 to-gold-400 w-0 transition-all duration-300"></div>
+                </div>
+
+                <!-- Dynamic Mentor Schedule Blocks -->
+                <div id="pillar-list" class="space-y-2"></div>
+
+                <!-- Add Custom Task -->
+                <div class="pt-1 flex gap-2">
+                    <input id="custom-task-input" type="text" class="flex-1 bg-obsidian border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-gold-500" placeholder="Add custom execution block...">
+                    <button onclick="addCustomPillarTask()" class="px-3.5 py-2 rounded-xl bg-gold-500 text-obsidian font-bold text-xs shrink-0">+ Add</button>
+                </div>
+            </div>
+
+            <!-- Nightly Alignment Log -->
+            <div class="bg-charcoal border border-white/10 rounded-2xl p-4 sm:p-5 space-y-2.5">
+                <span class="text-[10px] font-mono uppercase tracking-widest text-gold-400 block">Pre-Sleep Consolidation</span>
+                <h3 class="text-sm font-bold text-white">Evening Proof-of-Identity Log</h3>
+                <textarea id="evening-win-input" rows="2" class="w-full bg-obsidian border border-white/15 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-gold-500" placeholder="Record 1 concrete win today that proves your shift in identity..."></textarea>
+                <button onclick="logEveningReflection()" class="w-full py-2.5 rounded-xl bg-slateCard border border-gold-500/40 text-gold-300 text-xs font-semibold hover:bg-gold-500 hover:text-obsidian transition">
+                    Imprint Today's Win
+                </button>
+                <div id="reflection-history" class="space-y-1.5 pt-1 max-h-36 overflow-y-auto"></div>
+            </div>
+        </section>
+
+        <!-- =======================================================
+             TAB 6: SOMATIC FASCIA, VAGUS NERVE & NEUROPLASTICITY LAB
+             ======================================================= -->
+        <section id="tab-somatic" class="tab-panel hidden space-y-4">
+            <!-- 1. Nervous System Financial & Receiving Capacity Regulator -->
+            <div class="bg-charcoal border border-cyanGlow-500/30 rounded-2xl p-4 sm:p-5 space-y-3.5 gold-glow">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] font-mono uppercase tracking-widest text-cyanGlow-400">Polyvagal & Somatic Wealth Capacity</span>
+                        <h2 class="text-base sm:text-lg font-bold text-white">Nervous System Receiving Thermostat</h2>
+                    </div>
+                    <i class="fa-solid fa-bolt-lightning text-cyanGlow-400 text-lg"></i>
+                </div>
+                <p class="text-xs text-gray-300 leading-relaxed">
+                    If your nervous system associates high financial numbers, visibility, or massive success with threat or pressure, your body will trigger procrastination or self-sabotage to keep you "safe" in a familiar baseline. Expand your somatic safety zone below:
+                </p>
+
+                <div class="bg-obsidian border border-white/10 rounded-xl p-3.5 space-y-3">
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-gray-400">Somatic Safety & Wealth Capacity</span>
+                        <span id="capacity-level-badge" class="font-mono text-xs font-bold text-cyanGlow-400">80% // Ventral Vagal Expansion</span>
+                    </div>
+                    <input id="capacity-slider" type="range" min="10" max="100" value="80" oninput="updateSomaticCapacity(this.value)">
+                    <p id="capacity-prescription" class="text-xs text-gray-200 leading-relaxed pt-1 border-t border-white/10">
+                        "My nervous system is calm, wide, and grounded. It is completely safe for me to create, hold, and steward high financial abundance without urgency or contraction."
+                    </p>
+                </div>
+            </div>
+
+            <!-- 2. Guided Fascia Unwinding & Vagus Nerve De-Armoring -->
+            <div class="bg-charcoal border border-white/10 rounded-2xl p-4 sm:p-5 space-y-3.5">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] font-mono uppercase tracking-widest text-gold-400">Myofascial & Vagal Release</span>
+                        <h3 class="text-base font-bold text-white">Fascia Unwinding & Vagus Reset</h3>
+                    </div>
+                    <span id="somatic-timer-badge" class="font-mono text-xs bg-obsidian border border-gold-500/40 text-gold-400 px-2.5 py-1 rounded-lg">02:00</span>
+                </div>
+                <p class="text-xs text-gray-400 leading-relaxed">
+                    Fascia is a liquid-crystalline communicative web that stores chronic survival tension. Select a somatic protocol to release trapped resistance and signal deep vagal safety:
+                </p>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="selectFasciaProtocol('vagus_eyes', this)" class="fascia-btn p-2.5 rounded-xl bg-slateCard border border-gold-500 text-left transition">
+                        <span class="text-[10px] font-mono text-cyanGlow-400 block">Protocol 01 • 120s</span>
+                        <p class="text-xs font-bold text-white mt-0.5">Vagal Eye & Neck Reset</p>
+                        <p class="text-[10px] text-gray-400">Instant ventral vagal shift</p>
+                    </button>
+                    <button onclick="selectFasciaProtocol('jaw_cranial', this)" class="fascia-btn p-2.5 rounded-xl bg-obsidian border border-white/10 text-left transition">
+                        <span class="text-[10px] font-mono text-gold-400 block">Protocol 02 • 120s</span>
+                        <p class="text-xs font-bold text-white mt-0.5">Jaw & Cranial Fascia</p>
+                        <p class="text-[10px] text-gray-400">Dissolve control & force</p>
+                    </button>
+                    <button onclick="selectFasciaProtocol('psoas_diaphragm', this)" class="fascia-btn p-2.5 rounded-xl bg-obsidian border border-white/10 text-left transition">
+                        <span class="text-[10px] font-mono text-emerald-400 block">Protocol 03 • 150s</span>
+                        <p class="text-xs font-bold text-white mt-0.5">Psoas & Solar Release</p>
+                        <p class="text-[10px] text-gray-400">Clear survival fear & gut lock</p>
+                    </button>
+                    <button onclick="selectFasciaProtocol('thoracic_heart', this)" class="fascia-btn p-2.5 rounded-xl bg-obsidian border border-white/10 text-left transition">
+                        <span class="text-[10px] font-mono text-purple-400 block">Protocol 04 • 120s</span>
+                        <p class="text-xs font-bold text-white mt-0.5">Thoracic Chest Opening</p>
+                        <p class="text-[10px] text-gray-400">Expand receiving posture</p>
+                    </button>
+                </div>
+
+                <!-- Active Fascia Instruction Card -->
+                <div class="bg-obsidian border border-gold-500/30 rounded-xl p-3.5 space-y-2">
+                    <span id="fascia-active-title" class="text-[11px] font-mono text-gold-400 uppercase font-bold block">OCULOCARDIAC VAGUS NERVE RESET</span>
+                    <p id="fascia-active-steps" class="text-xs text-gray-200 leading-relaxed">
+                        Keep your head facing straight ahead. Gently look all the way to the RIGHT with just your eyes (do not turn your neck). Hold for 30–60 seconds until you feel an involuntary sigh, swallow, or yawn—then repeat looking LEFT.
+                    </p>
+                </div>
+
+                <button onclick="toggleFasciaTimer()" id="fascia-start-btn" class="w-full py-3 rounded-xl bg-gradient-to-r from-cyanGlow-500 to-gold-400 text-obsidian font-bold text-xs uppercase tracking-wider shadow-md flex items-center justify-center gap-2">
+                    <i id="fascia-btn-icon" class="fa-solid fa-play"></i>
+                    <span id="fascia-btn-text">Start Guided Somatic Release + 7.83Hz</span>
+                </button>
+            </div>
+
+            <!-- 3. Hebbian Neuroplasticity & Myelination Tracker -->
+            <div class="bg-charcoal border border-white/10 rounded-2xl p-4 sm:p-5 space-y-3.5">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] font-mono uppercase tracking-widest text-gold-400">Hebbian Synaptic Rewiring</span>
+                        <h3 class="text-base font-bold text-white">Neuroplasticity Myelination Lab</h3>
+                    </div>
+                    <i class="fa-solid fa-brain text-gold-400 text-base"></i>
+                </div>
+                <p class="text-xs text-gray-400 leading-relaxed">
+                    <em>"Neurons that fire together, wire together."</em> Every time you interrupt an old sabotage circuit and fire your new response, your brain wraps <strong>myelin</strong> around the new neural pathway until it becomes your automatic default identity.
+                </p>
+
+                <!-- Dynamic Neural Pathways List -->
+                <div id="neuro-circuit-list" class="space-y-2.5"></div>
+
+                <!-- Add New Neural Rewiring Circuit -->
+                <div class="bg-obsidian border border-white/10 rounded-xl p-3 space-y-2 pt-2.5">
+                    <span class="text-xs font-bold text-gold-400 block">+ Architect New Neural Pathway</span>
+                    <input id="neuro-old-input" type="text" placeholder="Old Sabotage Circuit to Prune (e.g., Hesitating to price my work high)" class="w-full bg-charcoal border border-white/10 rounded-lg p-2 text-xs text-white">
+                    <input id="neuro-new-input" type="text" placeholder="New Identity Circuit to Myelinate (e.g., Boldly stating my high-value rate)" class="w-full bg-charcoal border border-white/10 rounded-lg p-2 text-xs text-white">
+                    <button onclick="addNeuroCircuit()" class="w-full py-2.5 rounded-lg bg-gold-500/20 border border-gold-500 text-gold-300 text-xs font-bold hover:bg-gold-500 hover:text-obsidian transition">
+                        Build Synaptic Circuit (66-Rep Myelination Target)
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- =======================================================
+             TAB 7: AI SUBCONSCIOUS & IDENTITY MENTOR CHAT
+             ======================================================= -->
+        <section id="tab-aimentor" class="tab-panel hidden space-y-4">
+            <!-- Persistent Subconscious Shadow & Weakness Dossier -->
+            <div class="bg-charcoal border border-gold-500/30 rounded-2xl p-4 space-y-3 gold-glow">
+                <div class="flex items-center justify-between gap-2">
+                    <div>
+                        <span class="text-[10px] font-mono uppercase tracking-widest text-gold-400">Persistent AI Memory Profile</span>
+                        <h2 class="text-base font-bold text-white">My Shadow & Future-Self Dossier</h2>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="toggleVaultModal()" class="text-xs font-mono text-cyanGlow-400 bg-obsidian px-2.5 py-1 rounded-lg border border-cyanGlow-500/30 hover:border-cyanGlow-400 transition">
+                            <i class="fa-solid fa-key mr-1"></i>API Key Setup
+                        </button>
+                        <button onclick="toggleDossierEditor()" class="text-xs font-mono text-gold-400 bg-obsidian px-2.5 py-1 rounded-lg border border-gold-500/30">
+                            <i class="fa-solid fa-sliders mr-1"></i>Edit Memory
+                        </button>
+                    </div>
+                </div>
+
+                <p class="text-xs text-gray-300 leading-relaxed">
+                    Your AI Mentor reads this dossier before every response so it knows your exact blind spots, triggers, financial/creative blocks, and target identity.
+                </p>
+
+                <!-- Collapsible Dossier Editor -->
+                <div id="dossier-editor" class="hidden space-y-2.5 pt-2 border-t border-white/10">
+                    <div>
+                        <label class="text-[11px] text-rose-300 font-semibold block mb-1">Known Weaknesses, Triggers & Self-Sabotage Patterns:</label>
+                        <textarea id="profile-weaknesses" rows="2" class="w-full bg-obsidian border border-white/15 rounded-xl p-2 text-xs text-white focus:outline-none focus:border-gold-500"></textarea>
+                    </div>
+                    <div>
+                        <label class="text-[11px] text-cyanGlow-400 font-semibold block mb-1">Limiting Financial / Nervous System Beliefs to Rewire:</label>
+                        <textarea id="profile-money-beliefs" rows="2" class="w-full bg-obsidian border border-white/15 rounded-xl p-2 text-xs text-white focus:outline-none focus:border-gold-500"></textarea>
+                    </div>
+                    <div>
+                        <label class="text-[11px] text-emerald-300 font-semibold block mb-1">Desired Future-Self Reality (Financial, Craft, Spiritual, Physical):</label>
+                        <textarea id="profile-future-self" rows="2" class="w-full bg-obsidian border border-white/15 rounded-xl p-2 text-xs text-white focus:outline-none focus:border-gold-500"></textarea>
+                    </div>
+                    <button onclick="saveAiDossier()" class="w-full py-2.5 rounded-xl bg-gold-500 text-obsidian font-bold text-xs">
+                        Save & Lock Profile Into AI Memory
+                    </button>
+                </div>
+            </div>
+
+            <!-- Live AI Mentor Chat Window -->
+            <div class="bg-charcoal border border-white/10 rounded-2xl p-3.5 sm:p-4 flex flex-col space-y-3">
+                <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span class="text-xs font-bold text-white">Quantum & Neuro-Identity Mentor</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="extractShadowFromChat()" title="Let AI analyze your chat and update your weakness profile" class="text-[10px] font-mono bg-gold-500/15 border border-gold-500/40 text-gold-300 px-2 py-1 rounded-lg hover:bg-gold-500 hover:text-obsidian transition">
+                            <i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Learn My Pattern
+                        </button>
+                        <button onclick="clearMentorChat()" class="text-[10px] text-gray-500 hover:text-rose-400 px-1.5">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Intervention Prompts -->
+                <div class="flex gap-1.5 overflow-x-auto pb-1">
+                    <button onclick="sendQuickMentorPrompt('I feel resistance and procrastination creeping in right now. Diagnose my nervous system state and give me an immediate override command.')" class="shrink-0 text-[11px] bg-obsidian border border-white/10 px-2.5 py-1.5 rounded-xl text-gray-300 hover:border-gold-500">
+                        ⚡ Break My Procrastination Now
+                    </button>
+                    <button onclick="sendQuickMentorPrompt('Help me expand my nervous system and fascia capacity to feel safe receiving higher financial abundance today.')" class="shrink-0 text-[11px] bg-obsidian border border-white/10 px-2.5 py-1.5 rounded-xl text-gray-300 hover:border-gold-500">
+                        💎 Expand Financial Capacity
+                    </button>
+                    <button onclick="sendQuickMentorPrompt('Expose my current blind spot based on my profile and give me a Hermetic & Neuroplasticity reframe.')" class="shrink-0 text-[11px] bg-obsidian border border-white/10 px-2.5 py-1.5 rounded-xl text-gray-300 hover:border-gold-500">
+                        🧠 Expose My Blind Spot
+                    </button>
+                </div>
+
+                <!-- Chat Message Stream -->
+                <div id="ai-chat-stream" class="space-y-3 max-h-80 overflow-y-auto pr-1 py-1"></div>
+
+                <!-- Input Bar -->
+                <div class="flex gap-2 pt-1 border-t border-white/10">
+                    <input id="ai-chat-input" type="text" onkeydown="if(event.key==='Enter') sendMentorMessage()" placeholder="Tell your Mentor what you're feeling, avoiding, or manifesting..." class="flex-1 bg-obsidian border border-white/15 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-gold-500">
+                    <button id="ai-send-btn" onclick="sendMentorMessage()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-gold-500 to-gold-400 text-obsidian font-bold text-xs shrink-0 active:scale-95 transition">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast-box" class="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 transition-opacity duration-300 bg-charcoal border border-gold-500 text-white px-4 py-2 rounded-xl shadow-2xl text-xs font-medium flex items-center gap-2">
+        <i class="fa-solid fa-circle-check text-gold-400"></i>
+        <span id="toast-text">State Updated</span>
+    </div>
+
+    <!-- 7-TAB MOBILE BOTTOM NAVIGATION -->
+    <nav class="fixed bottom-0 left-0 right-0 z-40 bg-obsidian/95 backdrop-blur-lg border-t border-white/10 px-1 py-1.5">
+        <div class="max-w-lg mx-auto grid grid-cols-7 gap-0.5">
+            <button onclick="switchTab('tab-theta')" id="nav-tab-theta" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-gold-400 bg-white/5">
+                <i class="fa-solid fa-wave-square text-xs mb-0.5"></i>
+                <span class="text-[9px] font-semibold">Theta</span>
+            </button>
+            <button onclick="switchTab('tab-coherence')" id="nav-tab-coherence" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-gray-400">
+                <i class="fa-solid fa-heart-pulse text-xs mb-0.5"></i>
+                <span class="text-[9px] font-semibold">Coherence</span>
+            </button>
+            <button onclick="switchTab('tab-somatic')" id="nav-tab-somatic" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-gray-400">
+                <i class="fa-solid fa-brain text-xs mb-0.5"></i>
+                <span class="text-[9px] font-semibold">Neuro/Fascia</span>
+            </button>
+            <button onclick="switchTab('tab-sats')" id="nav-tab-sats" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-gray-400">
+                <i class="fa-solid fa-film text-xs mb-0.5"></i>
+                <span class="text-[9px] font-semibold">SATS</span>
+            </button>
+            <button onclick="switchTab('tab-hermetic')" id="nav-tab-hermetic" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-gray-400">
+                <i class="fa-solid fa-scale-balanced text-xs mb-0.5"></i>
+                <span class="text-[9px] font-semibold">Hermetic</span>
+            </button>
+            <button onclick="switchTab('tab-mentor')" id="nav-tab-mentor" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-gray-400">
+                <i class="fa-solid fa-list-check text-xs mb-0.5"></i>
+                <span class="text-[9px] font-semibold">Schedule</span>
+            </button>
+            <button onclick="switchTab('tab-aimentor')" id="nav-tab-aimentor" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-gray-400">
+                <i class="fa-solid fa-robot text-xs mb-0.5"></i>
+                <span class="text-[9px] font-semibold">AI Mentor</span>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        /* ==============================================================
+           1. RAM-OPTIMIZED WEB AUDIO API BINAURAL SYNTHESIZER
+           ============================================================== */
+        let audioCtx = null;
+        let leftOsc = null;
+        let rightOsc = null;
+        let merger = null;
+        let binauralGain = null;
+        let noiseNode = null;
+        let noiseGain = null;
+        let isAudioPlaying = false;
+
+        let currentCarrierHz = 200;
+        let currentBeatHz = 6.0;
+        let currentStateTitle = "DEEP THETA // SUBCONSCIOUS REHEARSAL";
+
+        function initAudioEngine() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContext();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            stopAudioNodesOnly();
+
+            merger = audioCtx.createChannelMerger(2);
+            binauralGain = audioCtx.createGain();
+            const volSlider = document.getElementById('volume-slider').value;
+            binauralGain.gain.setValueAtTime((volSlider / 100) * 0.35, audioCtx.currentTime);
+
+            leftOsc = audioCtx.createOscillator();
+            leftOsc.type = 'sine';
+            leftOsc.frequency.setValueAtTime(currentCarrierHz, audioCtx.currentTime);
+
+            rightOsc = audioCtx.createOscillator();
+            rightOsc.type = 'sine';
+            rightOsc.frequency.setValueAtTime(currentCarrierHz + currentBeatHz, audioCtx.currentTime);
+
+            leftOsc.connect(merger, 0, 0);
+            rightOsc.connect(merger, 0, 1);
+            merger.connect(binauralGain);
+            binauralGain.connect(audioCtx.destination);
+
+            // Lightweight 1-second warm brown noise buffer
+            const bufferSize = audioCtx.sampleRate;
+            const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const output = noiseBuffer.getChannelData(0);
+            let lastOut = 0.0;
+            for (let i = 0; i < bufferSize; i++) {
+                const white = Math.random() * 2 - 1;
+                output[i] = (lastOut + (0.02 * white)) / 1.02;
+                lastOut = output[i];
+                output[i] *= 0.14;
+            }
+
+            noiseNode = audioCtx.createBufferSource();
+            noiseNode.buffer = noiseBuffer;
+            noiseNode.loop = true;
+
+            noiseGain = audioCtx.createGain();
+            const noiseVal = document.getElementById('noise-slider').value;
+            noiseGain.gain.setValueAtTime((noiseVal / 100) * 0.25, audioCtx.currentTime);
+
+            noiseNode.connect(noiseGain);
+            noiseGain.connect(audioCtx.destination);
+
+            leftOsc.start();
+            rightOsc.start();
+            noiseNode.start();
+            isAudioPlaying = true;
+            updateAudioUI();
+        }
+
+        function stopAudioNodesOnly() {
+            if (leftOsc) { try { leftOsc.stop(); leftOsc.disconnect(); } catch (e) {} leftOsc = null; }
+            if (rightOsc) { try { rightOsc.stop(); rightOsc.disconnect(); } catch (e) {} rightOsc = null; }
+            if (noiseNode) { try { noiseNode.stop(); noiseNode.disconnect(); } catch (e) {} noiseNode = null; }
+        }
+
+        function stopAudioEngine() {
+            stopAudioNodesOnly();
+            isAudioPlaying = false;
+            updateAudioUI();
+        }
+
+        function toggleAudioEngine() {
+            if (isAudioPlaying) {
+                stopAudioEngine();
+                showToast("Binaural Engine Paused");
+            } else {
+                initAudioEngine();
+                showToast(`Active: ${currentBeatHz.toFixed(2).replace(/\.00$/, '.0')} Hz Entrainment`);
+            }
+        }
+
+        function updateFrequenciesLive() {
+            document.getElementById('display-beat-freq').textContent = currentBeatHz.toFixed(2).replace(/\.00$/, '.0');
+            document.getElementById('display-state-name').textContent = currentStateTitle;
+            document.getElementById('left-ear-hz').textContent = currentCarrierHz.toFixed(1);
+            document.getElementById('right-ear-hz').textContent = (currentCarrierHz + currentBeatHz).toFixed(1);
+            document.getElementById('slider-beat-label').textContent = `${currentBeatHz.toFixed(1)} Hz`;
+
+            if (isAudioPlaying && audioCtx && leftOsc && rightOsc) {
+                leftOsc.frequency.setTargetAtTime(currentCarrierHz, audioCtx.currentTime, 0.05);
+                rightOsc.frequency.setTargetAtTime(currentCarrierHz + currentBeatHz, audioCtx.currentTime, 0.05);
+            }
+            updateAudioUI();
+        }
+
+        function applyPreset(carrier, beat, title, btnEl) {
+            currentCarrierHz = carrier;
+            currentBeatHz = beat;
+            currentStateTitle = title;
+            document.getElementById('beat-slider').value = beat;
+
+            document.querySelectorAll('.preset-btn').forEach(b => {
+                b.classList.remove('border-gold-500', 'bg-slateCard');
+                b.classList.add('border-white/10', 'bg-obsidian');
+            });
+            if (btnEl) {
+                btnEl.classList.remove('border-white/10', 'bg-obsidian');
+                btnEl.classList.add('border-gold-500', 'bg-slateCard');
+            }
+
+            updateFrequenciesLive();
+            if (!isAudioPlaying) initAudioEngine();
+        }
+
+        function updateSynthFromSliders() {
+            currentBeatHz = parseFloat(document.getElementById('beat-slider').value);
+            if (currentBeatHz < 5.5) currentStateTitle = "DEEP THETA // SATS HYPNAGOGIC BRIDGE";
+            else if (currentBeatHz < 8.0) currentStateTitle = "CORE THETA // SUBCONSCIOUS REHEARSAL";
+            else if (currentBeatHz < 12.5) currentStateTitle = "ALPHA ZONE // COHERENT STUDIO FLOW";
+            else currentStateTitle = "BETA LOCK // HIGH EXECUTION FOCUS";
+            updateFrequenciesLive();
+        }
+
+        function updateVolumes() {
+            const vol = document.getElementById('volume-slider').value;
+            const noise = document.getElementById('noise-slider').value;
+            document.getElementById('vol-label').textContent = `${vol}%`;
+            document.getElementById('noise-label').textContent = `${noise}%`;
+
+            if (isAudioPlaying && audioCtx) {
+                if (binauralGain) binauralGain.gain.setTargetAtTime((vol / 100) * 0.35, audioCtx.currentTime, 0.05);
+                if (noiseGain) noiseGain.gain.setTargetAtTime((noise / 100) * 0.25, audioCtx.currentTime, 0.05);
+            }
+        }
+
+        function updateAudioUI() {
+            const dot = document.getElementById('audio-status-dot');
+            const readout = document.getElementById('header-freq-readout');
+            const quickLabel = document.getElementById('quick-audio-label');
+            const mainBtnText = document.getElementById('main-synth-text');
+            const mainBtnIcon = document.getElementById('main-synth-icon');
+            const ring1 = document.getElementById('harmonic-ring-1');
+            const ring2 = document.getElementById('harmonic-ring-2');
+
+            if (isAudioPlaying) {
+                dot.className = "w-2 h-2 rounded-full bg-emerald-400 animate-pulse inline-block";
+                readout.textContent = `LIVE: ${currentBeatHz.toFixed(1)}Hz`;
+                quickLabel.textContent = `${currentBeatHz.toFixed(1)}Hz ON`;
+                mainBtnText.textContent = "PAUSE BINAURAL SYNTHESIZER";
+                mainBtnIcon.className = "fa-solid fa-pause";
+                ring1.classList.remove('theta-pulse-paused');
+                ring2.classList.remove('theta-pulse-paused');
+            } else {
+                dot.className = "w-2 h-2 rounded-full bg-gray-600 inline-block";
+                readout.textContent = "AUDIO STANDBY";
+                quickLabel.textContent = `${currentBeatHz.toFixed(0)}Hz PLAY`;
+                mainBtnText.textContent = "ACTIVATE THETA SYNTHESIZER";
+                mainBtnIcon.className = "fa-solid fa-play";
+                ring1.classList.add('theta-pulse-paused');
+                ring2.classList.add('theta-pulse-paused');
+            }
+        }
+
+        /* ==============================================================
+           2. VOICE IDENTITY LOOP RECORDER
+           ============================================================== */
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        let isRecordingVoice = false;
+        let isLoopingVoice = false;
+
+        async function toggleVoiceRecording() {
+            const statusBadge = document.getElementById('voice-status-badge');
+            const recBtnText = document.getElementById('record-btn-text');
+            const recIcon = document.getElementById('record-icon');
+
+            if (!isRecordingVoice) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    recordedChunks = [];
+                    mediaRecorder = new MediaRecorder(stream);
+                    mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+                        const player = document.getElementById('voice-loop-player');
+                        player.src = URL.createObjectURL(blob);
+                        player.volume = 0.45;
+                        const playBtn = document.getElementById('play-voice-btn');
+                        playBtn.disabled = false;
+                        playBtn.className = "flex-1 py-2.5 px-3 rounded-xl bg-gold-500/20 border border-gold-500 text-gold-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition";
+                        statusBadge.textContent = "Loop Ready";
+                        statusBadge.className = "text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300";
+                        stream.getTracks().forEach(t => t.stop());
+                        showToast("Voice Imprint Saved");
+                    };
+                    mediaRecorder.start();
+                    isRecordingVoice = true;
+                    recBtnText.textContent = "Stop Recording";
+                    recIcon.className = "fa-solid fa-stop animate-pulse";
+                    statusBadge.textContent = "Recording...";
+                } catch (err) {
+                    showToast("Microphone permission required");
+                }
+            } else {
+                mediaRecorder.stop();
+                isRecordingVoice = false;
+                recBtnText.textContent = "Re-Record";
+                recIcon.className = "fa-solid fa-microphone";
+            }
+        }
+
+        function toggleVoiceLoopPlayback() {
+            const player = document.getElementById('voice-loop-player');
+            const playText = document.getElementById('play-voice-text');
+            if (!player.src) return;
+            if (!isLoopingVoice) {
+                player.play();
+                isLoopingVoice = true;
+                playText.textContent = "Pause Voice Loop";
+                showToast("Playing Voice Over Theta");
+            } else {
+                player.pause();
+                isLoopingVoice = false;
+                playText.textContent = "Loop Over Theta";
+            }
+        }
+
+        /* ==============================================================
+           3. BRAIN-HEART COHERENCE & SURVIVAL/CREATION RADAR
+           ============================================================== */
+        let coherenceSecondsTotal = 180;
+        let coherenceSecondsLeft = 180;
+        let coherenceInterval = null;
+        let isCoherenceRunning = false;
+
+        function setInternalState(mode) {
+            const survBtn = document.getElementById('btn-state-survival');
+            const creatBtn = document.getElementById('btn-state-creation');
+            const alertBox = document.getElementById('survival-shift-alert');
+            const topPill = document.getElementById('state-pill');
+
+            if (mode === 'survival') {
+                survBtn.className = "p-3 rounded-xl bg-rose-950/40 border border-rose-500 text-left transition";
+                creatBtn.className = "p-3 rounded-xl bg-obsidian border border-white/10 text-left transition";
+                alertBox.classList.remove('hidden');
+                topPill.textContent = "Survival";
+                topPill.className = "text-[9px] font-mono uppercase px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30";
+            } else {
+                creatBtn.className = "p-3 rounded-xl bg-emerald-950/30 border border-emerald-500 text-left transition";
+                survBtn.className = "p-3 rounded-xl bg-obsidian border border-white/10 text-left transition";
+                alertBox.classList.add('hidden');
+                topPill.textContent = "Creation";
+                topPill.className = "text-[9px] font-mono uppercase px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+                showToast("Creation State Locked In");
+            }
+        }
+
+        function selectEmotionChip(btn, emotionName) {
+            document.querySelectorAll('.emotion-chip').forEach(b => {
+                b.className = "emotion-chip text-[11px] px-2.5 py-1 rounded-lg bg-obsidian border border-white/10 text-gray-300";
+            });
+            btn.className = "emotion-chip text-[11px] px-2.5 py-1 rounded-lg bg-gold-500 text-obsidian font-bold";
+            document.getElementById('active-emotion-text').textContent = emotionName;
+        }
+
+        function setCoherenceDuration(mins, btnEl) {
+            if (isCoherenceRunning) toggleCoherenceSession();
+            coherenceSecondsTotal = mins * 60;
+            coherenceSecondsLeft = coherenceSecondsTotal;
+            updateTimerDisplay(coherenceSecondsLeft, 'rehearsal-timer-display');
+            document.querySelectorAll('.dur-btn').forEach(b => b.className = "dur-btn px-2 py-1 rounded-lg text-gray-400");
+            btnEl.className = "dur-btn px-2 py-1 rounded-lg bg-gold-500 text-obsidian font-bold";
+        }
+
+        function toggleCoherenceSession() {
+            const btnText = document.getElementById('rehearsal-btn-text');
+            const btnIcon = document.getElementById('rehearsal-btn-icon');
+            const orb = document.getElementById('breath-orb');
+            const instruction = document.getElementById('breath-instruction');
+
+            if (!isCoherenceRunning) {
+                applyPreset(180, 7.83, 'SCHUMANN // HEART-BRAIN COHERENCE', null);
+                isCoherenceRunning = true;
+                btnText.textContent = "PAUSE COHERENCE SESSION";
+                btnIcon.className = "fa-solid fa-pause";
+
+                let tick = 0;
+                coherenceInterval = setInterval(() => {
+                    if (coherenceSecondsLeft > 0) {
+                        coherenceSecondsLeft--;
+                        updateTimerDisplay(coherenceSecondsLeft, 'rehearsal-timer-display');
+                        const mod = tick % 14;
+                        if (mod < 4) {
+                            instruction.textContent = "INHALE (4s)";
+                            orb.style.transform = "scale(1.28)";
+                        } else if (mod < 8) {
+                            instruction.textContent = "HOLD (4s)";
+                            orb.style.transform = "scale(1.28)";
+                        } else {
+                            instruction.textContent = "EXHALE (6s)";
+                            orb.style.transform = "scale(0.92)";
+                        }
+                        tick++;
+                    } else {
+                        clearInterval(coherenceInterval);
+                        isCoherenceRunning = false;
+                        setInternalState('creation');
+                        instruction.textContent = "COHERENT";
+                        orb.style.transform = "scale(1)";
+                        btnText.textContent = "RESTART COHERENCE SESSION";
+                        btnIcon.className = "fa-solid fa-rotate-right";
+                        showToast("Heart-Brain Coherence Established");
+                    }
+                }, 1000);
+            } else {
+                clearInterval(coherenceInterval);
+                isCoherenceRunning = false;
+                instruction.textContent = "PAUSED";
+                orb.style.transform = "scale(1)";
+                btnText.textContent = "RESUME COHERENCE SESSION";
+                btnIcon.className = "fa-solid fa-play";
+            }
+        }
+
+        function saveRasFilter() {
+            const statement = document.getElementById('input-ras-statement').value.trim();
+            const target = document.getElementById('input-daily-target').value.trim();
+            const rasData = {
+                statement: statement || "I operate from calm certainty, executing my craft and financial standards without hesitation.",
+                target: target || "90m Undistracted Deep Craft Block"
+            };
+            localStorage.setItem('atelier_ras_data', JSON.stringify(rasData));
+            renderRasBanner();
+            showToast("RAS Filter Locked to Top Bar");
+        }
+
+        function renderRasBanner() {
+            const saved = JSON.parse(localStorage.getItem('atelier_ras_data') || 'null');
+            const statement = saved ? saved.statement : "I operate from calm certainty, executing my craft and financial standards without hesitation.";
+            const target = saved ? saved.target : "90m Undistracted Deep Craft Block";
+            document.getElementById('banner-ras-target').textContent = `"${statement}"`;
+            document.getElementById('banner-daily-target').textContent = target;
+            document.getElementById('input-ras-statement').value = statement;
+            document.getElementById('input-daily-target').value = target;
+        }
+
+        /* ==============================================================
+           4. SATS (STATE AKIN TO SLEEP) MENTAL MOVIE VISUALIZER
+           ============================================================== */
+        const defaultSatsScenes = [
+            {
+                pillar: "CRAFT & MASTERY",
+                title: "Stepping back from a completed masterwork with total confidence and recognition.",
+                sensory: "Feeling the tools in my hands, seeing the rich detail and precision of my finished work right in front of me.",
+                emotion: "It is done. My daily discipline created undeniable mastery."
+            },
+            {
+                pillar: "FINANCIAL ABUNDANCE",
+                title: "Reviewing my accounts and seeing consistent, high-value income from my craft.",
+                sensory: "Seeing the exact numbers glowing on my screen, taking a deep, slow breath of complete financial peace.",
+                emotion: "I am richly rewarded for the value I bring to the world."
+            },
+            {
+                pillar: "UNSHAKABLE SELF-COMMAND",
+                title: "Moving through my entire day with zero procrastination and calm authority.",
+                sensory: "Feeling grounded posture, clear focus in my eyes, and calm pride at the end of the evening.",
+                emotion: "My word to myself is law. I am the architect of my habits."
+            }
+        ];
+
+        let satsScenes = [];
+        let currentSatsIndex = 0;
+        let satsAutoInterval = null;
+
+        function loadSatsScenes() {
+            const saved = localStorage.getItem('atelier_sats_scenes');
+            satsScenes = saved ? JSON.parse(saved) : defaultSatsScenes;
+            renderCurrentSatsScene();
+        }
+
+        function renderCurrentSatsScene() {
+            if (satsScenes.length === 0) return;
+            const s = satsScenes[currentSatsIndex % satsScenes.length];
+            document.getElementById('sats-scene-pillar').textContent = `SCENE ${currentSatsIndex + 1} // ${s.pillar.toUpperCase()}`;
+            document.getElementById('sats-scene-counter').textContent = `${currentSatsIndex + 1} / ${satsScenes.length}`;
+            document.getElementById('sats-scene-title').textContent = s.title;
+            document.getElementById('sats-scene-sensory').textContent = s.sensory;
+            document.getElementById('sats-scene-emotion').textContent = `"${s.emotion}"`;
+        }
+
+        function nextSatsScene() {
+            currentSatsIndex = (currentSatsIndex + 1) % satsScenes.length;
+            renderCurrentSatsScene();
+        }
+
+        function prevSatsScene() {
+            currentSatsIndex = (currentSatsIndex - 1 + satsScenes.length) % satsScenes.length;
+            renderCurrentSatsScene();
+        }
+
+        function toggleSatsAutoPlay() {
+            const label = document.getElementById('sats-play-label');
+            const indicator = document.getElementById('sats-autoplay-indicator');
+            if (!satsAutoInterval) {
+                applyPreset(190, 4.5, 'BORDER THETA // DEEP SATS IMPRINT', null);
+                satsAutoInterval = setInterval(nextSatsScene, 12000);
+                label.textContent = "Stop Reel";
+                indicator.textContent = "Auto-Cycling (12s / Scene)";
+                indicator.className = "text-[10px] font-mono text-gold-400";
+                showToast("SATS Reel + 4.5Hz Theta Started");
+            } else {
+                clearInterval(satsAutoInterval);
+                satsAutoInterval = null;
+                label.textContent = "Play Reel (4.5Hz)";
+                indicator.textContent = "Manual Mode";
+                indicator.className = "text-[10px] font-mono text-gray-500";
+            }
+        }
+
+        function addCustomSatsScene() {
+            const pillar = document.getElementById('new-sats-pillar').value.trim() || "FUTURE SELF";
+            const emotion = document.getElementById('new-sats-emotion').value.trim() || "Grateful & Certain";
+            const title = document.getElementById('new-sats-title').value.trim();
+            const sensory = document.getElementById('new-sats-sensory').value.trim() || "Seeing and feeling the scene from first-person perspective.";
+            if (!title) {
+                showToast("Enter a first-person scene description");
+                return;
+            }
+            satsScenes.push({ pillar, title, sensory, emotion });
+            localStorage.setItem('atelier_sats_scenes', JSON.stringify(satsScenes));
+            currentSatsIndex = satsScenes.length - 1;
+            renderCurrentSatsScene();
+            document.getElementById('new-sats-title').value = '';
+            document.getElementById('new-sats-sensory').value = '';
+            showToast("Custom Scene Added to SATS Reel");
+        }
+
+        /* ==============================================================
+           5. HERMETIC POLARITY TRANSMUTER & KABBALISTIC TREE ARCHITECT
+           ============================================================== */
+        const hermeticStates = {
+            procrastination: {
+                neg: "Shadow Pole: Inertia & Delay",
+                pos: "Mastery Pole: Decisive Momentum",
+                law: "PRINCIPLE OF POLARITY & CAUSE/EFFECT",
+                reframe: "Inertia and momentum are the same energy differing only in degree. Stop negotiating with how you feel—move the physical body for 180 seconds to swing the pendulum."
+            },
+            doubt: {
+                neg: "Shadow Pole: Imposter Doubt",
+                pos: "Mastery Pole: Curious Craft Mastery",
+                law: "PRINCIPLE OF MENTALISM & VIBRATION",
+                reframe: "Self-doubt is simply imagination pointed in reverse. Redirect that exact mental imagery toward the precision of your next brushstroke or task."
+            },
+            scarcity: {
+                neg: "Shadow Pole: Financial Contraction",
+                pos: "Mastery Pole: High-Value Creation",
+                law: "PRINCIPLE OF CORRESPONDENCE",
+                reframe: "Outer returns reflect inner standards and tangible output. Shift focus from worry to creating undeniable value and stewarding every resource with respect."
+            },
+            overwhelm: {
+                neg: "Shadow Pole: Scattered Chaos",
+                pos: "Mastery Pole: Single-Pointed Order",
+                law: "PRINCIPLE OF RHYTHM",
+                reframe: "Step out of the chaotic swing by narrowing your world to a single 30-minute block. Complete one concrete thing in Malkuth."
+            }
+        };
+
+        function loadHermeticState(key) {
+            const st = hermeticStates[key];
+            if (!st) return;
+            document.getElementById('pole-negative').textContent = st.neg;
+            document.getElementById('pole-positive').textContent = st.pos;
+            document.getElementById('hermetic-law-title').textContent = st.law;
+            document.getElementById('hermetic-reframe-text').textContent = st.reframe;
+            document.getElementById('polarity-slider').value = 85;
+            updatePolarityDegree(85);
+        }
+
+        function updatePolarityDegree(val) {
+            document.getElementById('polarity-pct').textContent = `${val}% Transmuted`;
+        }
+
+        function groundTreeIntoMalkuth() {
+            const keter = document.getElementById('tree-keter').value.trim();
+            const gevurah = document.getElementById('tree-gevurah').value.trim();
+            const malkuth = document.getElementById('tree-malkuth').value.trim();
+
+            if (!malkuth) {
+                showToast("Define Step 4 (Malkuth Physical Action) first");
+                return;
+            }
+
+            const taskLabel = keter ? `[Malkuth: ${keter}] ${malkuth}` : `[Malkuth Action] ${malkuth}`;
+            pillars.push({
+                id: 'tree_' + Date.now(),
+                category: gevurah ? `GEVURAH BOUNDARY: CUT ${gevurah.toUpperCase()}` : 'KABBALISTIC MALKUTH ACTION',
+                title: taskLabel,
+                done: false
+            });
+            localStorage.setItem('atelier_pillars', JSON.stringify(pillars));
+            renderPillars();
+            document.getElementById('tree-malkuth').value = '';
+            showToast("Grounded into Today's Schedule!");
+            switchTab('tab-mentor');
+        }
+
+        /* ==============================================================
+           6. ANTI-SABOTAGE SPRINT & TIME-LOCKED MENTOR SCHEDULE
+           ============================================================== */
+        let sprintSecondsLeft = 300;
+        let sprintInterval = null;
+        let isSprintRunning = false;
+
+        function selectUrgeChip(text) {
+            document.getElementById('sabotage-urge-input').value = text;
+        }
+
+        function toggleSabotageSprint() {
+            const btnText = document.getElementById('sprint-btn-text');
+            if (!isSprintRunning) {
+                applyPreset(240, 14.0, 'BETA LOCK // ANTI-SABOTAGE SPRINT', null);
+                isSprintRunning = true;
+                btnText.textContent = "PAUSE SPRINT";
+                sprintInterval = setInterval(() => {
+                    if (sprintSecondsLeft > 0) {
+                        sprintSecondsLeft--;
+                        updateTimerDisplay(sprintSecondsLeft, 'sprint-timer-display');
+                    } else {
+                        clearInterval(sprintInterval);
+                        isSprintRunning = false;
+                        sprintSecondsLeft = 300;
+                        updateTimerDisplay(sprintSecondsLeft, 'sprint-timer-display');
+                        btnText.textContent = "START 5-MIN OVERRIDE";
+                        let count = parseInt(localStorage.getItem('atelier_urges_defeated') || '0', 10) + 1;
+                        localStorage.setItem('atelier_urges_defeated', count);
+                        document.getElementById('urges-defeated-count').textContent = count;
+                        showToast("Impulse Overridden! Momentum Restored.");
+                    }
+                }, 1000);
+            } else {
+                clearInterval(sprintInterval);
+                isSprintRunning = false;
+                btnText.textContent = "RESUME SPRINT";
+            }
+        }
+
+        const defaultMentorSchedule = [
+            { id: 'm1', category: 'PHASE I // 06:00–09:00 • MORNING PRIME', title: 'Theta Breath Coherence + Lock RAS Target', done: false },
+            { id: 'm2', category: 'PHASE II // 09:00–13:00 • DEEP WORK BLOCK 1', title: '90m Undistracted Primary Craft / Value Creation', done: false },
+            { id: 'm3', category: 'PHASE III // 13:00–15:00 • POLARITY RESET', title: 'Physical Training / Hydration + State Check-In', done: false },
+            { id: 'm4', category: 'PHASE IV // 15:00–19:00 • EXECUTION BLOCK 2', title: 'Financial Stewardship & Secondary Craft Block', done: false },
+            { id: 'm5', category: 'PHASE V // 21:00–SLEEP • SATS IMPRINT', title: 'Evening Proof Log + 4.5Hz SATS Mental Movie Reel', done: false }
+        ];
+
+        let pillars = [];
+
+        function updateActiveTimePhaseBadge() {
+            const hr = new Date().getHours();
+            const badge = document.getElementById('active-mentor-phase-badge');
+            if (hr < 9) badge.textContent = "Phase I: Morning Prime";
+            else if (hr < 13) badge.textContent = "Phase II: Deep Craft";
+            else if (hr < 15) badge.textContent = "Phase III: Midday Reset";
+            else if (hr < 19) badge.textContent = "Phase IV: Execution II";
+            else badge.textContent = "Phase V: SATS Imprint";
+        }
+
+        function loadPillars() {
+            const saved = localStorage.getItem('atelier_pillars');
+            pillars = saved ? JSON.parse(saved) : defaultMentorSchedule;
+            renderPillars();
+        }
+
+        function renderPillars() {
+            const container = document.getElementById('pillar-list');
+            container.innerHTML = '';
+            let completed = 0;
+
+            pillars.forEach((item, index) => {
+                if (item.done) completed++;
+                const card = document.createElement('div');
+                card.className = `p-3 rounded-xl border transition cursor-pointer flex items-center justify-between gap-2.5 ${
+                    item.done
+                        ? 'bg-gold-500/10 border-gold-500/50 text-white'
+                        : 'bg-obsidian border-white/10 text-gray-300'
+                }`;
+                card.onclick = () => togglePillar(index);
+                card.innerHTML = `
+                    <div class="flex items-center gap-3 flex-1">
+                        <div class="w-5 h-5 rounded-md border flex items-center justify-center shrink-0 ${
+                            item.done ? 'bg-gold-500 border-gold-400 text-obsidian' : 'border-gray-600'
+                        }">
+                            ${item.done ? '<i class="fa-solid fa-check text-[10px]"></i>' : ''}
+                        </div>
+                        <div>
+                            <span class="text-[9px] font-mono uppercase tracking-wider ${item.done ? 'text-gold-400' : 'text-gray-500'} block">${item.category}</span>
+                            <p class="text-xs font-semibold ${item.done ? 'line-through text-gray-400' : 'text-white'}">${item.title}</p>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            const pct = pillars.length > 0 ? Math.round((completed / pillars.length) * 100) : 0;
+            document.getElementById('pillar-progress-bar').style.width = `${pct}%`;
+            document.getElementById('header-score').textContent = `${pct}%`;
+        }
+
+        function togglePillar(index) {
+            pillars[index].done = !pillars[index].done;
+            localStorage.setItem('atelier_pillars', JSON.stringify(pillars));
+            renderPillars();
+            if (pillars[index].done) showToast("Protocol Phase Locked In");
+        }
+
+        function addCustomPillarTask() {
+            const input = document.getElementById('custom-task-input');
+            const val = input.value.trim();
+            if (!val) return;
+            pillars.push({
+                id: 'c_' + Date.now(),
+                category: 'CUSTOM MALKUTH COMMITMENT',
+                title: val,
+                done: false
+            });
+            input.value = '';
+            localStorage.setItem('atelier_pillars', JSON.stringify(pillars));
+            renderPillars();
+            showToast("Added to Mentor Schedule");
+        }
+
+        function resetDailyChecklist() {
+            pillars.forEach(p => p.done = false);
+            localStorage.setItem('atelier_pillars', JSON.stringify(pillars));
+            renderPillars();
+            showToast("New Day Slate Initialized");
+        }
+
+        function logEveningReflection() {
+            const input = document.getElementById('evening-win-input');
+            const text = input.value.trim();
+            if (!text) return;
+            const logs = JSON.parse(localStorage.getItem('atelier_reflections') || '[]');
+            logs.unshift({
+                date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                text
+            });
+            localStorage.setItem('atelier_reflections', JSON.stringify(logs.slice(0, 10)));
+            input.value = '';
+            renderReflections();
+            showToast("Proof of Identity Logged");
+        }
+
+        function renderReflections() {
+            const container = document.getElementById('reflection-history');
+            const logs = JSON.parse(localStorage.getItem('atelier_reflections') || '[]');
+            container.innerHTML = logs.map(item => `
+                <div class="bg-obsidian border border-white/5 rounded-xl p-2 text-xs">
+                    <span class="font-mono text-[10px] text-gold-400 mr-1.5">[${item.date}]</span>
+                    <span class="text-gray-300">${item.text}</span>
+                </div>
+            `).join('');
+        }
+
+        /* ==============================================================
+           7. SOMATIC FASCIA, VAGUS NERVE & NEUROPLASTICITY LAB
+           ============================================================== */
+        const fasciaProtocols = {
+            vagus_eyes: {
+                title: "OCULOCARDIAC VAGUS NERVE RESET",
+                seconds: 120,
+                steps: "Keep your head facing straight ahead. Gently look all the way to the RIGHT with just your eyes (without turning your neck). Breathe slowly into your ribs for 60 seconds until you feel an involuntary sigh, swallow, or yawn—then look LEFT for 60 seconds."
+            },
+            jaw_cranial: {
+                title: "JAW & CRANIAL FASCIA DE-ARMORING",
+                seconds: 120,
+                steps: "Place the tip of your tongue gently behind your top front teeth and let your lower jaw hang slack. Massage the masseter muscles below your cheekbones in slow circles while exhaling with a low hum to vibrate the vagus nerve through your throat fascia."
+            },
+            psoas_diaphragm: {
+                title: "PSOAS & SOLAR PLEXUS UNWINDING",
+                seconds: 150,
+                steps: "Sit or stand tall and soften your belly completely. Inhale wide into your lower ribs, then exhale slowly for 8 seconds while consciously melting the deep hip-flexor (psoas) tension where survival urgency and financial contraction hide."
+            },
+            thoracic_heart: {
+                title: "THORACIC FASCIA & RECEIVING EXPANSION",
+                seconds: 120,
+                steps: "Roll your shoulder blades gently down and back, lifting your sternum 1 inch toward the ceiling. Place one hand over your chest and breathe wide into your collarbones, signaling to your nervous system that it is safe to take up space and receive."
+            }
+        };
+
+        let fasciaSecondsLeft = 120;
+        let fasciaInterval = null;
+        let isFasciaRunning = false;
+
+        function updateSomaticCapacity(val) {
+            const badge = document.getElementById('capacity-level-badge');
+            const presc = document.getElementById('capacity-prescription');
+            if (val < 40) {
+                badge.textContent = `${val}% // Sympathetic Contraction`;
+                badge.className = "font-mono text-xs font-bold text-rose-400";
+                presc.textContent = "Notice where your body is bracing (jaw, belly, chest). Run the 2-minute Vagal Eye Reset below before making financial or creative decisions.";
+            } else if (val < 75) {
+                badge.textContent = `${val}% // Stabilizing Regulation`;
+                badge.className = "font-mono text-xs font-bold text-gold-400";
+                presc.textContent = "Your nervous system is settling. Slow your exhale to 6 seconds so your body learns that higher output and wealth require calm precision, not frantic stress.";
+            } else {
+                badge.textContent = `${val}% // Ventral Vagal Expansion`;
+                badge.className = "font-mono text-xs font-bold text-cyanGlow-400";
+                presc.textContent = "\"My nervous system is calm, wide, and grounded. It is completely safe for me to create, hold, and steward high financial abundance without urgency or contraction.\"";
+            }
+        }
+
+        function selectFasciaProtocol(key, btnEl) {
+            const p = fasciaProtocols[key];
+            if (!p) return;
+            if (isFasciaRunning) toggleFasciaTimer();
+            fasciaSecondsLeft = p.seconds;
+            updateTimerDisplay(fasciaSecondsLeft, 'somatic-timer-badge');
+            document.getElementById('fascia-active-title').textContent = p.title;
+            document.getElementById('fascia-active-steps').textContent = p.steps;
+
+            document.querySelectorAll('.fascia-btn').forEach(b => {
+                b.classList.remove('border-gold-500', 'bg-slateCard');
+                b.classList.add('border-white/10', 'bg-obsidian');
+            });
+            if (btnEl) {
+                btnEl.classList.remove('border-white/10', 'bg-obsidian');
+                btnEl.classList.add('border-gold-500', 'bg-slateCard');
+            }
+        }
+
+        function toggleFasciaTimer() {
+            const btnText = document.getElementById('fascia-btn-text');
+            const btnIcon = document.getElementById('fascia-btn-icon');
+            if (!isFasciaRunning) {
+                applyPreset(180, 7.83, 'SCHUMANN // SOMATIC FASCIA RELEASE', null);
+                isFasciaRunning = true;
+                btnText.textContent = "Pause Somatic Release";
+                btnIcon.className = "fa-solid fa-pause";
+                fasciaInterval = setInterval(() => {
+                    if (fasciaSecondsLeft > 0) {
+                        fasciaSecondsLeft--;
+                        updateTimerDisplay(fasciaSecondsLeft, 'somatic-timer-badge');
+                    } else {
+                        clearInterval(fasciaInterval);
+                        isFasciaRunning = false;
+                        fasciaSecondsLeft = 120;
+                        updateTimerDisplay(fasciaSecondsLeft, 'somatic-timer-badge');
+                        btnText.textContent = "Start Guided Somatic Release + 7.83Hz";
+                        btnIcon.className = "fa-solid fa-play";
+                        document.getElementById('capacity-slider').value = 95;
+                        updateSomaticCapacity(95);
+                        showToast("Fascia Unwound & Vagal Safety Locked!");
+                    }
+                }, 1000);
+            } else {
+                clearInterval(fasciaInterval);
+                isFasciaRunning = false;
+                btnText.textContent = "Resume Somatic Release";
+                btnIcon.className = "fa-solid fa-play";
+            }
+        }
+
+        const defaultNeuroCircuits = [
+            {
+                id: 'nc1',
+                oldPath: "Feeling overwhelmed or avoidant when thinking about financial expansion",
+                newPath: "Taking 1 slow vagal breath and executing 15 minutes of high-value creation",
+                reps: 14
+            },
+            {
+                id: 'nc2',
+                oldPath: "Checking phone or seeking dopamine when hitting creative friction",
+                newPath: "Staying locked in the studio chair for 5 more minutes of deliberate craft",
+                reps: 21
+            }
+        ];
+
+        let neuroCircuits = [];
+
+        function loadNeuroCircuits() {
+            const saved = localStorage.getItem('atelier_neuro_circuits');
+            neuroCircuits = saved ? JSON.parse(saved) : defaultNeuroCircuits;
+            renderNeuroCircuits();
+        }
+
+        function renderNeuroCircuits() {
+            const container = document.getElementById('neuro-circuit-list');
+            container.innerHTML = '';
+            neuroCircuits.forEach((c, idx) => {
+                const pct = Math.min(100, Math.round((c.reps / 66) * 100));
+                const card = document.createElement('div');
+                card.className = "bg-obsidian border border-white/10 rounded-xl p-3 space-y-2";
+                card.innerHTML = `
+                    <div class="flex justify-between items-start gap-2">
+                        <div class="text-xs space-y-1 flex-1">
+                            <p class="text-rose-400/90 line-through text-[11px]"><i class="fa-solid fa-scissors mr-1"></i>Pruning: ${c.oldPath}</p>
+                            <p class="text-emerald-300 font-semibold"><i class="fa-solid fa-bolt mr-1"></i>Wiring: ${c.newPath}</p>
+                        </div>
+                        <button onclick="fireNeuroRep(${idx})" class="px-2.5 py-1.5 rounded-lg bg-gold-500 text-obsidian font-mono font-bold text-[11px] shrink-0 active:scale-95 transition">
+                            +1 Fire (${c.reps}/66)
+                        </button>
+                    </div>
+                    <div class="w-full h-1.5 bg-charcoal rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-cyanGlow-400 to-gold-400 transition-all duration-300" style="width:${pct}%"></div>
+                    </div>
+                    <div class="flex justify-between text-[10px] font-mono text-gray-400">
+                        <span>Myelination Depth: ${pct}%</span>
+                        <span>${c.reps >= 66 ? 'AUTOMATIC IDENTITY LOCKED' : (66 - c.reps) + ' reps to full automaticity'}</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function fireNeuroRep(index) {
+            neuroCircuits[index].reps += 1;
+            localStorage.setItem('atelier_neuro_circuits', JSON.stringify(neuroCircuits));
+            renderNeuroCircuits();
+            showToast("Synapse Fired! Myelin Sheath Strengthened.");
+        }
+
+        function addNeuroCircuit() {
+            const oldInput = document.getElementById('neuro-old-input');
+            const newInput = document.getElementById('neuro-new-input');
+            if (!oldInput.value.trim() || !newInput.value.trim()) {
+                showToast("Enter both the Old Circuit and New Circuit");
+                return;
+            }
+            neuroCircuits.push({
+                id: 'nc_' + Date.now(),
+                oldPath: oldInput.value.trim(),
+                newPath: newInput.value.trim(),
+                reps: 1
+            });
+            localStorage.setItem('atelier_neuro_circuits', JSON.stringify(neuroCircuits));
+            oldInput.value = '';
+            newInput.value = '';
+            renderNeuroCircuits();
+            showToast("New Neural Pathway Created!");
+        }
+
+        /* ==============================================================
+           8. GEMINI AI SUBCONSCIOUS & IDENTITY MENTOR ENGINE
+           ============================================================== */
+        const defaultAiDossier = {
+            weaknesses: "Occasional self-sabotage or distraction when transitioning into high-stakes deep work; overthinking instead of immediate execution.",
+            moneyBeliefs: "Rewiring the nervous system to feel completely safe, relaxed, and grounded while receiving and holding high financial abundance.",
+            futureSelf: "A hyper-focused, prolific creator and master of my craft with complete financial freedom, emotional coherence, and unshakable daily discipline."
+        };
+
+        let aiDossier = null;
+        let mentorChatHistory = [];
+
+        function loadAiDossier() {
+            const saved = localStorage.getItem('atelier_ai_dossier');
+            aiDossier = saved ? JSON.parse(saved) : defaultAiDossier;
+            document.getElementById('profile-weaknesses').value = aiDossier.weaknesses;
+            document.getElementById('profile-money-beliefs').value = aiDossier.moneyBeliefs;
+            document.getElementById('profile-future-self').value = aiDossier.futureSelf;
+
+            const savedChat = localStorage.getItem('atelier_mentor_chat');
+            if (savedChat) {
+                mentorChatHistory = JSON.parse(savedChat);
+            } else {
+                mentorChatHistory = [{
+                    role: 'mentor',
+                    text: "I have loaded your Shadow & Future-Self Dossier. Whenever you feel hesitation, scarcity tension in your nervous system, or an urge to procrastinate, tell me immediately. We will regulate your vagus nerve, reframe the polarity, and lock in your next physical action."
+                }];
+            }
+            renderMentorChat();
+        }
+
+        function toggleDossierEditor() {
+            document.getElementById('dossier-editor').classList.toggle('hidden');
+        }
+
+        function saveAiDossier() {
+            aiDossier = {
+                weaknesses: document.getElementById('profile-weaknesses').value.trim() || defaultAiDossier.weaknesses,
+                moneyBeliefs: document.getElementById('profile-money-beliefs').value.trim() || defaultAiDossier.moneyBeliefs,
+                futureSelf: document.getElementById('profile-future-self').value.trim() || defaultAiDossier.futureSelf
+            };
+            localStorage.setItem('atelier_ai_dossier', JSON.stringify(aiDossier));
+            document.getElementById('dossier-editor').classList.add('hidden');
+            showToast("AI Subconscious Memory Updated");
+        }
+
+        function renderMentorChat() {
+            const stream = document.getElementById('ai-chat-stream');
+            stream.innerHTML = mentorChatHistory.map(m => {
+                if (m.role === 'user') {
+                    return `
+                        <div class="flex justify-end">
+                            <div class="bg-gold-500/20 border border-gold-500/40 text-white rounded-2xl rounded-tr-sm px-3.5 py-2.5 max-w-[85%] text-xs leading-relaxed">
+                                ${escapeHtml(m.text)}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    return `
+                        <div class="flex justify-start">
+                            <div class="bg-obsidian border border-white/10 text-gray-200 rounded-2xl rounded-tl-sm px-3.5 py-2.5 max-w-[90%] text-xs leading-relaxed space-y-1">
+                                <span class="text-[9px] font-mono uppercase text-gold-400 block">ATELIER AI MENTOR</span>
+                                <div>${formatMentorMarkdown(m.text)}</div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }).join('');
+            stream.scrollTop = stream.scrollHeight;
+        }
+
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>"']/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[s]));
+        }
+
+        function formatMentorMarkdown(text) {
+            return escapeHtml(text)
+                .replace(/\*\*(.*?)\*\*/g, '<strong class="text-gold-300">$1</strong>')
+                .replace(/\n/g, '<br>');
+        }
+
+        function loadSavedApiKeyUI() {
+            const savedKey = (localStorage.getItem('mentor_gemini_api_key') || '').trim();
+            const input = document.getElementById('personal-api-key-input');
+            const pill = document.getElementById('api-key-status-pill');
+            if (input) input.value = savedKey;
+            if (pill) {
+                if (savedKey) {
+                    pill.textContent = "Personal Key Active";
+                    pill.className = "text-[9px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+                } else {
+                    pill.textContent = "Preview / No Key";
+                    pill.className = "text-[9px] font-mono px-2 py-0.5 rounded bg-white/5 text-gray-400";
+                }
+            }
+        }
+
+        function toggleApiKeyVisibility() {
+            const input = document.getElementById('personal-api-key-input');
+            const icon = document.getElementById('api-key-eye-icon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fa-solid fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fa-solid fa-eye';
+            }
+        }
+
+        function savePersonalApiKey() {
+            const val = document.getElementById('personal-api-key-input').value.trim();
+            if (val) {
+                localStorage.setItem('mentor_gemini_api_key', val);
+                showToast("Personal Gemini API Key Saved!");
+            } else {
+                localStorage.removeItem('mentor_gemini_api_key');
+                showToast("Personal Key Cleared");
+            }
+            loadSavedApiKeyUI();
+        }
+
+        async function callGeminiWithBackoff(userPrompt, systemPrompt) {
+            const userKey = (localStorage.getItem('mentor_gemini_api_key') || '').trim();
+            const apiKey = "";
+            const apiUrl = userKey
+                ? `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(userKey)}`
+                : `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userPrompt }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] }
+            };
+
+            const delays = [1000, 2000, 4000];
+            for (let attempt = 0; attempt <= delays.length; attempt++) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (!response.ok) throw new Error('API request error');
+                    const result = await response.json();
+                    const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (text) return text;
+                    throw new Error('Empty response');
+                } catch (err) {
+                    if (attempt === delays.length) {
+                        const keyReminder = !userKey
+                            ? "\n\n🔑 **Standalone Phone Setup Tip:** To unlock live AI responses on your phone, tap **API Key Setup** at the top of this tab (or the Database icon in the top bar) and paste your free Google AI Studio key (`aistudio.google.com/apikey`)."
+                            : "\n\n🔑 **Connection Note:** Please check your internet connection or verify your Gemini API Key inside the **API Key Setup** button.";
+                        return "**[Offline Somatic & Hermetic Protocol]:** Your nervous system is signaling friction, which means you are standing right at the edge of a neuroplastic growth threshold.\n\n1. **Somatic Reset:** Unclench your jaw, drop your shoulders, and take one slow 4-second inhale and 6-second exhale.\n2. **Hermetic Polarity:** Transmute hesitation into momentum by shrinking the task to the next 3 minutes.\n3. **Malkuth Directive:** Begin your #1 target (`" + (document.getElementById('banner-daily-target')?.textContent || 'Deep Craft Block') + "`) right now for 300 seconds." + keyReminder;
+                    }
+                    await new Promise(r => setTimeout(r, delays[attempt]));
+                }
+            }
+        }
+
+        function sendQuickMentorPrompt(promptText) {
+            document.getElementById('ai-chat-input').value = promptText;
+            sendMentorMessage();
+        }
+
+        async function sendMentorMessage() {
+            const inputEl = document.getElementById('ai-chat-input');
+            const sendBtn = document.getElementById('ai-send-btn');
+            const userText = inputEl.value.trim();
+            if (!userText) return;
+
+            inputEl.value = '';
+            mentorChatHistory.push({ role: 'user', text: userText });
+            renderMentorChat();
+
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i>';
+
+            const activeRas = document.getElementById('banner-ras-target').textContent;
+            const activeTarget = document.getElementById('banner-daily-target').textContent;
+
+            const systemPrompt = `You are the ATELIER MENTOR, an elite, surgical Subconscious & Execution Coach combining Hebbian Neuroplasticity, Polyvagal & Fascia Nervous System Regulation (for wealth and creative capacity), Joe Dispenza's Brain-Heart Coherence, Neville Goddard's SATS, and Hermetic/Kabbalistic execution (bringing Keter down into Malkuth).
+            
+USER'S PERSISTENT DOSSIER:
+- Known Weaknesses & Sabotage Triggers: ${aiDossier.weaknesses}
+- Financial & Nervous System Beliefs: ${aiDossier.moneyBeliefs}
+- Desired Future Self Identity: ${aiDossier.futureSelf}
+- Today's RAS Identity Statement: ${activeRas}
+- Today's #1 Execution Target: ${activeTarget}
+
+Respond concisely (under 150 words) in 3 sharp sections:
+1. **Neuro & Somatic Diagnosis**: Identify what their nervous system, fascia, or old neural circuit is doing right now.
+2. **Subconscious & Hermetic Reframe**: Shift their identity state and polarity on the spot.
+3. **Immediate Malkuth Directive**: Give one concrete 3-minute physical action they must do right now.`;
+
+            const recentContext = mentorChatHistory.slice(-5).map(m => `${m.role.toUpperCase()}: ${m.text}`).join('\n');
+            const reply = await callGeminiWithBackoff(recentContext, systemPrompt);
+
+            mentorChatHistory.push({ role: 'mentor', text: reply });
+            localStorage.setItem('atelier_mentor_chat', JSON.stringify(mentorChatHistory.slice(-20)));
+            renderMentorChat();
+
+            sendBtn.disabled = false;
+            sendBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
+        }
+
+        async function extractShadowFromChat() {
+            const recentText = mentorChatHistory.slice(-8).map(m => `${m.role}: ${m.text}`).join('\n');
+            showToast("Analyzing chat for subconscious patterns...");
+            const sys = "Analyze the user's messages and summarize in 1 concise sentence their core self-sabotage trigger or resistance pattern so they can overcome it.";
+            const extracted = await callGeminiWithBackoff(recentText, sys);
+            if (extracted && !extracted.includes('[Offline Fallback')) {
+                aiDossier.weaknesses = extracted.replace(/\*\*/g, '').trim();
+                document.getElementById('profile-weaknesses').value = aiDossier.weaknesses;
+                localStorage.setItem('atelier_ai_dossier', JSON.stringify(aiDossier));
+                document.getElementById('dossier-editor').classList.remove('hidden');
+                showToast("Weakness Profile Updated by AI!");
+            }
+        }
+
+        function clearMentorChat() {
+            mentorChatHistory = [{
+                role: 'mentor',
+                text: "Chat history cleared. Your Shadow & Future-Self Dossier remains locked in memory. What is your current state?"
+            }];
+            localStorage.setItem('atelier_mentor_chat', JSON.stringify(mentorChatHistory));
+            renderMentorChat();
+        }
+
+        /* ==============================================================
+           9. BACKUP & CONTINUOUS EVOLUTION VAULT
+           ============================================================== */
+        function toggleVaultModal() {
+            document.getElementById('vault-modal').classList.toggle('hidden');
+        }
+
+        function exportAppData() {
+            const payload = {
+                ras: localStorage.getItem('atelier_ras_data'),
+                sats: localStorage.getItem('atelier_sats_scenes'),
+                pillars: localStorage.getItem('atelier_pillars'),
+                reflections: localStorage.getItem('atelier_reflections'),
+                urges: localStorage.getItem('atelier_urges_defeated'),
+                neuro: localStorage.getItem('atelier_neuro_circuits'),
+                dossier: localStorage.getItem('atelier_ai_dossier'),
+                apiKey: localStorage.getItem('mentor_gemini_api_key')
+            };
+            const box = document.getElementById('vault-json-box');
+            box.value = JSON.stringify(payload);
+            box.select();
+            document.execCommand('copy');
+            showToast("Backup Copied to Clipboard!");
+        }
+
+        function importAppData() {
+            const box = document.getElementById('vault-json-box');
+            try {
+                const data = JSON.parse(box.value.trim());
+                if (data.ras) localStorage.setItem('atelier_ras_data', data.ras);
+                if (data.sats) localStorage.setItem('atelier_sats_scenes', data.sats);
+                if (data.pillars) localStorage.setItem('atelier_pillars', data.pillars);
+                if (data.reflections) localStorage.setItem('atelier_reflections', data.reflections);
+                if (data.urges) localStorage.setItem('atelier_urges_defeated', data.urges);
+                if (data.neuro) localStorage.setItem('atelier_neuro_circuits', data.neuro);
+                if (data.dossier) localStorage.setItem('atelier_ai_dossier', data.dossier);
+                if (data.apiKey) localStorage.setItem('mentor_gemini_api_key', data.apiKey);
+                window.onload();
+                toggleVaultModal();
+                showToast("All Data & Streaks Restored!");
+            } catch (e) {
+                showToast("Invalid Backup JSON Code");
+            }
+        }
+
+        /* ==============================================================
+           10. TAB NAVIGATION & UTILITIES
+           ============================================================== */
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-gold-400', 'bg-white/5');
+                btn.classList.add('text-gray-400');
+            });
+            const activeNav = document.getElementById('nav-' + tabId);
+            if (activeNav) {
+                activeNav.classList.remove('text-gray-400');
+                activeNav.classList.add('text-gold-400', 'bg-white/5');
+            }
+        }
+
+        function updateTimerDisplay(totalSeconds, elementId) {
+            const m = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+            const s = String(totalSeconds % 60).padStart(2, '0');
+            document.getElementById(elementId).textContent = `${m}:${s}`;
+        }
+
+        function showToast(msg) {
+            const box = document.getElementById('toast-box');
+            document.getElementById('toast-text').textContent = msg;
+            box.classList.remove('opacity-0');
+            box.classList.add('opacity-100');
+            setTimeout(() => {
+                box.classList.remove('opacity-100');
+                box.classList.add('opacity-0');
+            }, 2200);
+        }
+
+        window.onload = function () {
+            document.getElementById('urges-defeated-count').textContent = localStorage.getItem('atelier_urges_defeated') || '0';
+            updateActiveTimePhaseBadge();
+            renderRasBanner();
+            loadSatsScenes();
+            loadPillars();
+            renderReflections();
+            loadNeuroCircuits();
+            loadAiDossier();
+            loadSavedApiKeyUI();
+            updateFrequenciesLive();
+        };
+    </script>
+</body>
+</html>
+```
